@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -27,6 +28,7 @@ public class EpicsCaService {
 
     private final EpicsConfig epicsConfig;
     private final CurrentCalculationService currentCalculationService;
+    private final AtomicReference<double[]> lastGoodBeamCurrent = new AtomicReference<>();
 
     public Optional<BoosterData> readBoosterData() {
         try {
@@ -34,9 +36,10 @@ public class EpicsCaService {
             double[] bd1Raw = readWaveform(resolvePv(boosterPv, "bd1", "MG-BR:BD1-I:Wf"));
             double[] bd2Raw = readWaveform(resolvePv(boosterPv, "bd2", "MG-BR:BD2-I:Wf"));
             double[] bfRaw = readWaveform(resolvePv(boosterPv, "bf", "MG-BR:BF-I:Wf"));
-            double[] beamRaw = readWaveform(resolvePv(boosterPv, "beam-current", "BI-BDS:DCCT-Ch1Wf10Data-Mes"));
+            String beamPv = resolvePv(boosterPv, "beam-current", "BI-BDS:DCCT-Ch1Wf10Data-Mes");
+            double[] beamRaw = tryReadBeamCurrent(beamPv);
 
-            if (bd1Raw.length == 0 || bd2Raw.length == 0 || bfRaw.length == 0 || beamRaw.length == 0) {
+            if (bd1Raw.length == 0 || bd2Raw.length == 0 || bfRaw.length == 0) {
                 return Optional.empty();
             }
 
@@ -48,8 +51,27 @@ public class EpicsCaService {
 
             return Optional.of(toBoosterData(energy, beam, bd1, bd2, bf));
         } catch (Exception e) {
-            log.warn("Failed reading EPICS PV waveforms via CA: {}", e.getMessage());
+            log.warn("Failed reading required EPICS PV waveforms via CA: {}", e.getMessage());
             return Optional.empty();
+        }
+    }
+
+    private double[] tryReadBeamCurrent(String beamPv) {
+        try {
+            double[] beamRaw = readWaveform(beamPv);
+            if (beamRaw.length == 0) {
+                throw new IllegalStateException("empty waveform");
+            }
+            lastGoodBeamCurrent.set(beamRaw);
+            return beamRaw;
+        } catch (Exception e) {
+            double[] last = lastGoodBeamCurrent.get();
+            if (last != null && last.length > 0) {
+                log.warn("Beam current PV '{}' unavailable ({}), using last-good waveform", beamPv, e.getMessage());
+                return last;
+            }
+            log.warn("Beam current PV '{}' unavailable ({}), using zero waveform fallback", beamPv, e.getMessage());
+            return new double[TARGET_POINTS];
         }
     }
 
@@ -107,19 +129,30 @@ public class EpicsCaService {
         }
         Process process = pb.start();
         boolean finished = process.waitFor(3, TimeUnit.SECONDS);
-        if (!finished || process.exitValue() != 0) {
-            throw new IllegalStateException("caget failed for " + pvName);
-        }
 
+        String stdout = readStream(process.getInputStream());
+        String stderr = readStream(process.getErrorStream());
+
+        if (!finished) {
+            process.destroyForcibly();
+            throw new IllegalStateException("caget timeout for " + pvName);
+        }
+        if (process.exitValue() != 0) {
+            String details = stderr.isBlank() ? "exitCode=" + process.exitValue() : stderr.trim();
+            throw new IllegalStateException("caget failed for " + pvName + ": " + details);
+        }
+        return parseWaveform(stdout);
+    }
+
+    private String readStream(java.io.InputStream stream) throws Exception {
         StringBuilder out = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 out.append(line).append(' ');
             }
         }
-        return parseWaveform(out.toString());
+        return out.toString();
     }
 
     private double[] parseWaveform(String raw) {
