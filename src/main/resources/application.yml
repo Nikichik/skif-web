@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: skif-monitor
+
+epics:
+  simulation-mode: false
+  ca-addr-list: ""
+  pv:
+    linac:
+      klystron1-power: "KL1:POWER"
+      klystron2-power: "KL2:POWER"
+      klystron3-power: "KL3:POWER"
+      klystron1-status: "KL1:STATUS"
+      klystron2-status: "KL2:STATUS"
+      klystron3-status: "KL3:STATUS"
+      gun-current: "LINAC:GUN:CURRENT"
+      linac-current: "LINAC:CURRENT"
+      rf-status: "LINAC:RF:STATUS"
+      injector-status: "LINAC:INJ:STATUS"
+      systems-status: "LINAC:SYS:STATUS"
+    booster:
+      bd1: "MG-BR:BD1-I:Wf"
+      bd2: "MG-BR:BD2-I:Wf"
+      bf: "MG-BR:BF-I:Wf"
+      beam-current: "BI-BDS:DCCT-Ch1Wf10Data-Mes"
+      rf-status: "BOOSTER:RF:STATUS"
+      magnet-status: "BOOSTER:MAG:STATUS"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    ru.skif: DEBUG
+  file:
+    name: skif-monitor.log
