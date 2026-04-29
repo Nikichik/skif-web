@@ -122,26 +122,25 @@ public class EpicsCaService {
         }
 
         String cagetPath = epicsBase + "/bin/linux-x86_64/caget";
-        ProcessBuilder pb = new ProcessBuilder(cagetPath, "-t", pvName);
+        ProcessBuilder pb = new ProcessBuilder(cagetPath, "-t", "-w", "1.0", pvName);
         if (epicsConfig.getCaAddrList() != null && !epicsConfig.getCaAddrList().isBlank()) {
             pb.environment().put("EPICS_CA_ADDR_LIST", epicsConfig.getCaAddrList());
             pb.environment().put("EPICS_CA_AUTO_ADDR_LIST", "NO");
         }
+        pb.redirectErrorStream(true);
         Process process = pb.start();
-        boolean finished = process.waitFor(3, TimeUnit.SECONDS);
-
-        String stdout = readStream(process.getInputStream());
-        String stderr = readStream(process.getErrorStream());
+        String mergedOutput = readStream(process.getInputStream());
+        boolean finished = process.waitFor(2, TimeUnit.SECONDS);
 
         if (!finished) {
             process.destroyForcibly();
             throw new IllegalStateException("caget timeout for " + pvName);
         }
         if (process.exitValue() != 0) {
-            String details = stderr.isBlank() ? "exitCode=" + process.exitValue() : stderr.trim();
+            String details = mergedOutput.isBlank() ? "exitCode=" + process.exitValue() : mergedOutput.trim();
             throw new IllegalStateException("caget failed for " + pvName + ": " + details);
         }
-        return parseWaveform(stdout);
+        return parseWaveform(mergedOutput);
     }
 
     private String readStream(java.io.InputStream stream) throws Exception {
