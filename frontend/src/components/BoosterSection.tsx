@@ -27,26 +27,26 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
   return (
     <section className="px-4 py-3">
       <h2 className="text-base font-bold text-white mb-3 border-b border-panel-border pb-2">
-        Р‘СѓСЃС‚РµСЂРЅС‹Р№ СЃРёРЅС…СЂРѕС‚СЂРѕРЅ
+        Бустерный синхротрон
       </h2>
-      <div className="grid grid-cols-[200px_1fr] gap-4">
+      <div className="grid grid-cols-[200px_1fr] gap-4 items-stretch">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col items-center gap-3">
-            <StatusIndicator label="Р’Р§-СЃРёСЃС‚РµРјР°" status={data?.rfStatus || 'FAULT'} shape="circle" />
-            <StatusIndicator label="РњР°РіРЅРёС‚РЅР°СЏ СЃРёСЃС‚РµРјР°" status={data?.magnetStatus || 'FAULT'} shape="square" />
-            <StatusIndicator label="Р РµР·РµСЂРІ" status="OK" shape="circle" />
+            <StatusIndicator label="ВЧ-система" status={data?.rfStatus || 'FAULT'} shape="circle" />
+            <StatusIndicator label="Магнитная система" status={data?.magnetStatus || 'FAULT'} shape="square" />
+            <StatusIndicator label="Резерв" status="OK" shape="circle" />
           </div>
           <div className="flex flex-col gap-2 mt-2">
-            <ValueCard label="Р­РЅРµСЂРіРёСЏ РІРїСѓСЃРєР°" value={data?.injection.energy ?? null} unit="РњСЌР’" />
-            <ValueCard label="Р­РЅРµСЂРіРёСЏ РІС‹РїСѓСЃРєР°" value={data?.extraction.energy ?? null} unit="РњСЌР’" />
-            <ValueCard label="РўРѕРє РІРїСѓСЃРєР°" value={data?.injection.current ?? null} unit="РјРђ" />
-            <ValueCard label="РўРѕРє РІС‹РїСѓСЃРєР°" value={data?.extraction.current ?? null} unit="РјРђ" />
+            <ValueCard label="Энергия впуска" value={data?.injection.energy ?? null} unit="МэВ" />
+            <ValueCard label="Энергия выпуска" value={data?.extraction.energy ?? null} unit="МэВ" />
+            <ValueCard label="Ток впуска" value={data?.injection.current ?? null} unit="мА" />
+            <ValueCard label="Ток выпуска" value={data?.extraction.current ?? null} unit="мА" />
           </div>
         </div>
 
         <div className="bg-panel-card border border-panel-border rounded-lg p-4">
-          <h4 className="text-xs text-gray-400 mb-2">Р­РЅРµСЂРіРёСЏ Рё С‚РѕРє Р·Р° С†РёРєР» Р±СѓСЃС‚РµСЂР°</h4>
-          <ResponsiveContainer width="100%" height={350}>
+          <h4 className="text-xs text-gray-400 mb-2">Энергия и ток за цикл бустера</h4>
+          <ResponsiveContainer width="100%" height={520}>
             <LineChart data={chartData} margin={{ top: 10, right: 40, left: 10, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1E3050" />
               <XAxis
@@ -54,25 +54,25 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
                 type="number"
                 domain={[0, 1000]}
                 tick={{ fontSize: 10, fill: '#64748B' }}
-                label={{ value: 'РІСЂРµРјСЏ, РјСЃ', position: 'insideBottom', offset: -10, style: { fontSize: 10, fill: '#64748B' } }}
+                label={{ value: 'время, мс', position: 'insideBottom', offset: -10, style: { fontSize: 10, fill: '#64748B' } }}
               />
               <YAxis
                 yAxisId="energy"
                 orientation="left"
                 domain={energyDomain}
                 tick={{ fontSize: 10, fill: '#64748B' }}
-                label={{ value: 'Р­РЅРµСЂРіРёСЏ (РњСЌР’)', angle: -90, position: 'insideLeft', offset: 0, style: { fontSize: 10, fill: '#64748B' } }}
+                label={{ value: 'Энергия (МэВ)', angle: -90, position: 'insideLeft', offset: 0, style: { fontSize: 10, fill: '#64748B' } }}
               />
               <YAxis
                 yAxisId="current"
                 orientation="right"
                 domain={currentDomain}
                 tick={{ fontSize: 10, fill: '#64748B' }}
-                label={{ value: 'РўРѕРє (РјРђ)', angle: 90, position: 'insideRight', offset: 0, style: { fontSize: 10, fill: '#64748B' } }}
+                label={{ value: 'Ток (мА)', angle: 90, position: 'insideRight', offset: 0, style: { fontSize: 10, fill: '#64748B' } }}
               />
               <Tooltip
                 contentStyle={{ backgroundColor: '#111D33', border: '1px solid #1E3050', fontSize: 11 }}
-                labelFormatter={(v) => `${v} РјСЃ`}
+                labelFormatter={(v) => `${v} мс`}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <ReferenceLine
@@ -80,14 +80,14 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
                 x={injTimeMs}
                 stroke="#22C55E"
                 strokeDasharray="5 3"
-                label={{ value: 'Р’РїСѓСЃРє', position: 'top', fill: '#22C55E', fontSize: 10 }}
+                label={{ value: 'Впуск', position: 'top', fill: '#22C55E', fontSize: 10 }}
               />
               <ReferenceLine
                 yAxisId="energy"
                 x={extTimeMs}
                 stroke="#EF4444"
                 strokeDasharray="5 3"
-                label={{ value: 'Р’С‹РїСѓСЃРє', position: 'top', fill: '#EF4444', fontSize: 10 }}
+                label={{ value: 'Выпуск', position: 'top', fill: '#EF4444', fontSize: 10 }}
               />
               <Line
                 yAxisId="energy"
@@ -96,7 +96,7 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
                 stroke="#F59E0B"
                 dot={false}
                 strokeWidth={2}
-                name="Р­РЅРµСЂРіРёСЏ (РњСЌР’)"
+                name="Энергия (МэВ)"
                 isAnimationActive={false}
               />
               <Line
@@ -106,7 +106,7 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
                 stroke="#3B82F6"
                 dot={false}
                 strokeWidth={2}
-                name="РўРѕРє (РјРђ)"
+                name="Ток (мА)"
                 isAnimationActive={false}
               />
             </LineChart>

@@ -22,7 +22,7 @@ export default function PulseChart({ title, data, yLabel, color = '#3B82F6', yDo
   return (
     <div className="bg-panel-card border border-panel-border rounded-lg p-3">
       <h4 className="text-xs text-gray-400 mb-2">{title}</h4>
-      <ResponsiveContainer width="100%" height={240}>
+      <ResponsiveContainer width="100%" height={320}>
         <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 15 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1E3050" />
           <XAxis
@@ -30,7 +30,7 @@ export default function PulseChart({ title, data, yLabel, color = '#3B82F6', yDo
             type="number"
             domain={['dataMin', 'dataMax']}
             tick={{ fontSize: 9, fill: '#64748B' }}
-            label={{ value: 'РІСЂРµРјСЏ, РјРєСЃ', position: 'insideBottom', offset: -10, style: { fontSize: 9, fill: '#64748B' } }}
+            label={{ value: 'время, мкс', position: 'insideBottom', offset: -10, style: { fontSize: 9, fill: '#64748B' } }}
           />
           <YAxis
             tick={{ fontSize: 9, fill: '#64748B' }}
@@ -39,7 +39,7 @@ export default function PulseChart({ title, data, yLabel, color = '#3B82F6', yDo
           />
           <Tooltip
             contentStyle={{ backgroundColor: '#111D33', border: '1px solid #1E3050', fontSize: 11 }}
-            labelFormatter={(v) => `${v} РјРєСЃ`}
+            labelFormatter={(v) => `${v} мкс`}
           />
           {series && series.length > 0 ? (
             series.map(item => (

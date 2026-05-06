@@ -19,7 +19,7 @@ export default function LinacSection({ data }: LinacSectionProps) {
   return (
     <section className="px-4 py-3">
       <h2 className="text-base font-bold text-white mb-3 border-b border-panel-border pb-2">
-        Р›РёРЅРµР№РЅС‹Р№ СѓСЃРєРѕСЂРёС‚РµР»СЊ
+        Линейный ускоритель
       </h2>
       <div className="grid grid-cols-[1fr_3.6fr] gap-4">
         <div className="flex flex-col gap-3">
@@ -27,21 +27,21 @@ export default function LinacSection({ data }: LinacSectionProps) {
             <StatusIndicator label="KL1" status={kl1?.status || 'FAULT'} />
             <StatusIndicator label="KL2" status={kl2?.status || 'FAULT'} />
             <StatusIndicator label="KL3" status={kl3?.status || 'FAULT'} />
-            <StatusIndicator label="РЎРёСЃС‚РµРјС‹" status={data?.systemsStatus || 'FAULT'} />
-            <StatusIndicator label="РРЅР¶РµРєС‚РѕСЂ" status={data?.injectorStatus || 'FAULT'} />
-            <StatusIndicator label="Р’Р§" status={data?.rfStatus || 'FAULT'} />
+            <StatusIndicator label="Системы" status={data?.systemsStatus || 'FAULT'} />
+            <StatusIndicator label="Инжектор" status={data?.injectorStatus || 'FAULT'} />
+            <StatusIndicator label="ВЧ" status={data?.rfStatus || 'FAULT'} />
           </div>
           <div className="flex flex-col gap-2 mt-2">
-            <ValueCard label="РўРѕРє РїСѓС€РєРё" value={data?.gunCurrent ?? null} unit="РјРђ" />
-            <ValueCard label="РўРѕРє Р»РёРЅР°РєР°" value={data?.linacCurrent ?? null} unit="РјРђ" />
+            <ValueCard label="Ток пушки" value={data?.gunCurrent ?? null} unit="мА" />
+            <ValueCard label="Ток линака" value={data?.linacCurrent ?? null} unit="мА" />
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <PulseChart
-            title="РњРѕС‰РЅРѕСЃС‚СЊ РєР»РёСЃС‚СЂРѕРЅРѕРІ KL1 / KL2 / KL3"
+            title="Мощность клистронов KL1 / KL2 / KL3"
             data={powerData}
-            yLabel="РњР’С‚"
+            yLabel="МВт"
             series={[
               { key: 'kl1', label: 'KL1', color: '#3B82F6' },
               { key: 'kl2', label: 'KL2', color: '#8B5CF6' },
@@ -49,9 +49,9 @@ export default function LinacSection({ data }: LinacSectionProps) {
             ]}
           />
           <PulseChart
-            title="Р¤Р°Р·Р° РєР»РёСЃС‚СЂРѕРЅРѕРІ KL1 / KL2 / KL3"
+            title="Фаза клистронов KL1 / KL2 / KL3"
             data={phaseData}
-            yLabel="РіСЂР°РґСѓСЃС‹"
+            yLabel="градусы"
             series={[
               { key: 'ph1', label: 'KL1', color: '#F59E0B' },
               { key: 'ph2', label: 'KL2', color: '#10B981' },
