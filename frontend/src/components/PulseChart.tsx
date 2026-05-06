@@ -1,20 +1,28 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 
+interface PulseSeries {
+  key: string;
+  label: string;
+  color: string;
+}
+
 interface PulseChartProps {
   title: string;
-  data: number[][] | null;
+  data: number[][] | Array<Record<string, number>> | null;
   yLabel: string;
   color?: string;
   yDomain?: [number, number];
+  series?: PulseSeries[];
 }
 
-export default function PulseChart({ title, data, yLabel, color = '#3B82F6', yDomain }: PulseChartProps) {
-  const chartData = data?.map(([t, v]) => ({ t, v })) || [];
+export default function PulseChart({ title, data, yLabel, color = '#3B82F6', yDomain, series }: PulseChartProps) {
+  const chartData = normalizeChartData(data);
+  const computedYDomain = yDomain || computeTightDomain(chartData.map(p => p.v));
 
   return (
     <div className="bg-panel-card border border-panel-border rounded-lg p-3">
       <h4 className="text-xs text-gray-400 mb-2">{title}</h4>
-      <ResponsiveContainer width="100%" height={140}>
+      <ResponsiveContainer width="100%" height={240}>
         <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 15 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1E3050" />
           <XAxis
@@ -22,20 +30,63 @@ export default function PulseChart({ title, data, yLabel, color = '#3B82F6', yDo
             type="number"
             domain={['dataMin', 'dataMax']}
             tick={{ fontSize: 9, fill: '#64748B' }}
-            label={{ value: 'время, мкс', position: 'insideBottom', offset: -10, style: { fontSize: 9, fill: '#64748B' } }}
+            label={{ value: 'РІСЂРµРјСЏ, РјРєСЃ', position: 'insideBottom', offset: -10, style: { fontSize: 9, fill: '#64748B' } }}
           />
           <YAxis
             tick={{ fontSize: 9, fill: '#64748B' }}
-            domain={yDomain || ['auto', 'auto']}
+            domain={computedYDomain}
             label={{ value: yLabel, angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 9, fill: '#64748B' } }}
           />
           <Tooltip
             contentStyle={{ backgroundColor: '#111D33', border: '1px solid #1E3050', fontSize: 11 }}
-            labelFormatter={(v) => `${v} мкс`}
+            labelFormatter={(v) => `${v} РјРєСЃ`}
           />
-          <Line type="monotone" dataKey="v" stroke={color} dot={false} strokeWidth={1.5} isAnimationActive={false} />
+          {series && series.length > 0 ? (
+            series.map(item => (
+              <Line
+                key={item.key}
+                type="monotone"
+                dataKey={item.key}
+                stroke={item.color}
+                dot={false}
+                strokeWidth={1.6}
+                name={item.label}
+                isAnimationActive={false}
+              />
+            ))
+          ) : (
+            <Line type="monotone" dataKey="v" stroke={color} dot={false} strokeWidth={1.5} isAnimationActive={false} />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>
   );
+}
+
+function normalizeChartData(data: number[][] | Array<Record<string, number>> | null): Array<Record<string, number>> {
+  if (!data || data.length === 0) {
+    return [];
+  }
+  const first = data[0];
+  if (Array.isArray(first)) {
+    return (data as number[][]).map(([t, v]) => ({ t, v }));
+  }
+  return data as Array<Record<string, number>>;
+}
+
+function computeTightDomain(values: number[]): [number, number] {
+  if (values.length === 0) {
+    return [0, 1];
+  }
+
+  let min = Number.POSITIVE_INFINITY;
+  let max = Number.NEGATIVE_INFINITY;
+  for (const value of values) {
+    min = Math.min(min, value);
+    max = Math.max(max, value);
+  }
+
+  const span = Math.max(1e-6, max - min);
+  const pad = span * 0.15;
+  return [min - pad, max + pad];
 }
