@@ -43,6 +43,7 @@ export default function LinacSection({ data }: LinacSectionProps) {
             title="Мощность клистронов KL1 / KL2 / KL3"
             data={powerData}
             yLabel="МВт"
+            yDomain={[0, 50]}
             series={[
               { key: 'kl1', label: 'KL1', color: '#3B82F6' },
               { key: 'kl2', label: 'KL2', color: '#8B5CF6' },
@@ -53,6 +54,7 @@ export default function LinacSection({ data }: LinacSectionProps) {
             title="Фаза клистронов KL1 / KL2 / KL3"
             data={phaseData}
             yLabel="градусы"
+            yDomain={[-180, 180]}
             series={[
               { key: 'ph1', label: 'KL1', color: '#F59E0B' },
               { key: 'ph2', label: 'KL2', color: '#10B981' },
@@ -64,6 +66,9 @@ export default function LinacSection({ data }: LinacSectionProps) {
             data={rfData}
             yLabel="усл. ед."
             color="#22C55E"
+            xDomain={[0, 1]}
+            xLabel="время, с"
+            xUnit="с"
           />
         </div>
       </div>
@@ -78,10 +83,10 @@ function buildPowerData(kl1: number[][] | null, kl2: number[][] | null, kl3: num
   const len = Math.min(kl1.length, kl2.length, kl3.length);
   return Array.from({ length: len }, (_, i) => ({
     t: kl1[i][0],
-    v: kl1[i][1],
-    kl1: kl1[i][1],
-    kl2: kl2[i][1],
-    kl3: kl3[i][1],
+    v: clampTo50(kl1[i][1]),
+    kl1: clampTo50(kl1[i][1]),
+    kl2: clampTo50(kl2[i][1]),
+    kl3: clampTo50(kl3[i][1]),
   }));
 }
 
@@ -104,8 +109,14 @@ function buildRfData(kl1: number[][] | null, kl2: number[][] | null, kl3: number
   }
   const len = Math.min(kl1.length, kl2.length, kl3.length);
   return Array.from({ length: len }, (_, i) => {
-    const t = kl1[i][0];
+    const t = len > 1 ? i / (len - 1) : 0;
     const avg = (kl1[i][1] + kl2[i][1] + kl3[i][1]) / 3.0;
     return [t, avg];
   });
+}
+
+function clampTo50(value: number) {
+  if (value < 0) return 0;
+  if (value > 50) return 50;
+  return value;
 }

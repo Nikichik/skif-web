@@ -21,8 +21,6 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
 
   const injTimeMs = data ? data.injection.time * 1000 : 50;
   const extTimeMs = 400;
-  const energyDomain = computeTightDomain(chartData.map(point => point.energy), 0.08);
-  const currentDomain = computeTightDomain(chartData.map(point => point.current), 0.08);
 
   return (
     <section className="px-4 py-3">
@@ -59,14 +57,14 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
               <YAxis
                 yAxisId="energy"
                 orientation="left"
-                domain={energyDomain}
+                domain={[0, 3000]}
                 tick={{ fontSize: 10, fill: '#64748B' }}
                 label={{ value: 'Энергия (МэВ)', angle: -90, position: 'insideLeft', offset: 0, style: { fontSize: 10, fill: '#64748B' } }}
               />
               <YAxis
                 yAxisId="current"
                 orientation="right"
-                domain={currentDomain}
+                domain={[0, 5]}
                 tick={{ fontSize: 10, fill: '#64748B' }}
                 label={{ value: 'Ток (мА)', angle: 90, position: 'insideRight', offset: 0, style: { fontSize: 10, fill: '#64748B' } }}
               />
@@ -115,21 +113,4 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
       </div>
     </section>
   );
-}
-
-function computeTightDomain(values: number[], paddingRatio: number): [number, number] {
-  if (values.length === 0) {
-    return [0, 1];
-  }
-
-  let min = Number.POSITIVE_INFINITY;
-  let max = Number.NEGATIVE_INFINITY;
-  for (const value of values) {
-    min = Math.min(min, value);
-    max = Math.max(max, value);
-  }
-
-  const span = Math.max(1e-6, max - min);
-  const pad = Math.max(1e-6, span * paddingRatio);
-  return [min - pad, max + pad];
 }

@@ -13,9 +13,22 @@ interface PulseChartProps {
   color?: string;
   yDomain?: [number, number];
   series?: PulseSeries[];
+  xDomain?: [number, number];
+  xLabel?: string;
+  xUnit?: string;
 }
 
-export default function PulseChart({ title, data, yLabel, color = '#3B82F6', yDomain, series }: PulseChartProps) {
+export default function PulseChart({
+  title,
+  data,
+  yLabel,
+  color = '#3B82F6',
+  yDomain,
+  series,
+  xDomain,
+  xLabel = 'время, мкс',
+  xUnit = 'мкс',
+}: PulseChartProps) {
   const chartData = normalizeChartData(data);
   const computedYDomain = yDomain || computeTightDomain(chartData.map(p => p.v));
 
@@ -28,9 +41,9 @@ export default function PulseChart({ title, data, yLabel, color = '#3B82F6', yDo
           <XAxis
             dataKey="t"
             type="number"
-            domain={['dataMin', 'dataMax']}
+            domain={xDomain || ['dataMin', 'dataMax']}
             tick={{ fontSize: 9, fill: '#64748B' }}
-            label={{ value: 'время, мкс', position: 'insideBottom', offset: -10, style: { fontSize: 9, fill: '#64748B' } }}
+            label={{ value: xLabel, position: 'insideBottom', offset: -10, style: { fontSize: 9, fill: '#64748B' } }}
           />
           <YAxis
             tick={{ fontSize: 9, fill: '#64748B' }}
@@ -39,7 +52,7 @@ export default function PulseChart({ title, data, yLabel, color = '#3B82F6', yDo
           />
           <Tooltip
             contentStyle={{ backgroundColor: '#111D33', border: '1px solid #1E3050', fontSize: 11 }}
-            labelFormatter={(v) => `${v} мкс`}
+            labelFormatter={(v) => `${v} ${xUnit}`}
           />
           {series && series.length > 0 ? (
             series.map(item => (
