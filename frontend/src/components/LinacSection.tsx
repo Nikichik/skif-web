@@ -15,13 +15,14 @@ export default function LinacSection({ data }: LinacSectionProps) {
 
   const powerData = buildPowerData(kl1?.pulse || null, kl2?.pulse || null, kl3?.pulse || null);
   const phaseData = buildPhaseData(data?.phase || null);
+  const rfData = buildRfData(kl1?.pulse || null, kl2?.pulse || null, kl3?.pulse || null);
 
   return (
     <section className="px-4 py-3">
       <h2 className="text-base font-bold text-white mb-3 border-b border-panel-border pb-2">
         Линейный ускоритель
       </h2>
-      <div className="grid grid-cols-[1fr_3.6fr] gap-4">
+      <div className="grid grid-cols-[1fr_4fr] gap-4">
         <div className="flex flex-col gap-3">
           <div className="grid grid-cols-3 gap-2">
             <StatusIndicator label="KL1" status={kl1?.status || 'FAULT'} />
@@ -37,7 +38,7 @@ export default function LinacSection({ data }: LinacSectionProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <PulseChart
             title="Мощность клистронов KL1 / KL2 / KL3"
             data={powerData}
@@ -57,6 +58,12 @@ export default function LinacSection({ data }: LinacSectionProps) {
               { key: 'ph2', label: 'KL2', color: '#10B981' },
               { key: 'ph3', label: 'KL3', color: '#EF4444' },
             ]}
+          />
+          <PulseChart
+            title="ВЧ система"
+            data={rfData}
+            yLabel="усл. ед."
+            color="#22C55E"
           />
         </div>
       </div>
@@ -89,4 +96,16 @@ function buildPhaseData(phase: number[][] | null) {
     ph2: p + 7,
     ph3: p - 7,
   }));
+}
+
+function buildRfData(kl1: number[][] | null, kl2: number[][] | null, kl3: number[][] | null) {
+  if (!kl1 || !kl2 || !kl3) {
+    return null;
+  }
+  const len = Math.min(kl1.length, kl2.length, kl3.length);
+  return Array.from({ length: len }, (_, i) => {
+    const t = kl1[i][0];
+    const avg = (kl1[i][1] + kl2[i][1] + kl3[i][1]) / 3.0;
+    return [t, avg];
+  });
 }
