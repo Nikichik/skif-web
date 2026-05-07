@@ -161,10 +161,8 @@ public class EpicsCaService {
             try {
                 values.add(Double.parseDouble(token));
             } catch (NumberFormatException ignored) {
-                // skip PV name/meta tokens if present
             }
         }
-        // caget -t waveform output begins with element count (e.g. 9838), not data value.
         if (values.size() > 1) {
             values.remove(0);
         }
