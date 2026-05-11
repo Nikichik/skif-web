@@ -13,6 +13,12 @@ export interface LinacData {
   systemsStatus: string;
   injectorStatus: string;
   rfStatus: string;
+  kl1LlrfPowerStatus: string;
+  kl2LlrfPowerStatus: string;
+  kl3LlrfPowerStatus: string;
+  kl1PwrIlkStatus: string;
+  kl2PwrIlkStatus: string;
+  kl3PwrIlkStatus: string;
 }
 
 export interface InjectionExtractionData {
@@ -31,6 +37,10 @@ export interface BoosterData {
   extraction: InjectionExtractionData;
   rfStatus: string;
   magnetStatus: string;
+  cav1LlrfModulatorStatus: string;
+  cav2LlrfModulatorStatus: string;
+  cav3LlrfModulatorStatus: string;
+  powerSupplyStatus: string;
 }
 
 export interface MonitorSnapshot {

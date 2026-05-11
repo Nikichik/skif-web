@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.skif.monitor.config.EpicsConfig;
 import ru.skif.monitor.model.BoosterData;
+import ru.skif.monitor.model.LinacData;
 import ru.skif.monitor.model.MonitorSnapshot;
 
 import java.util.Optional;
@@ -32,8 +33,10 @@ public class DataCacheService {
 
         Optional<BoosterData> boosterData = epicsCaService.readBoosterData();
         if (boosterData.isPresent()) {
+            LinacData linacBase = simulationService.generateLinacSnapshot();
+            LinacData linacData = epicsCaService.readLinacStatusData(linacBase).orElse(linacBase);
             MonitorSnapshot snapshot = MonitorSnapshot.of(
-                    simulationService.generateLinacSnapshot(),
+                    linacData,
                     boosterData.get()
             );
             latestSnapshot.set(snapshot);

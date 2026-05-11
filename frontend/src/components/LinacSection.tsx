@@ -28,6 +28,12 @@ export default function LinacSection({ data }: LinacSectionProps) {
             <StatusIndicator label="KL1" status={kl1?.status || 'FAULT'} />
             <StatusIndicator label="KL2" status={kl2?.status || 'FAULT'} />
             <StatusIndicator label="KL3" status={kl3?.status || 'FAULT'} />
+            <StatusIndicator label="KL1 LLRF" status={data?.kl1LlrfPowerStatus || 'FAULT'} />
+            <StatusIndicator label="KL2 LLRF" status={data?.kl2LlrfPowerStatus || 'FAULT'} />
+            <StatusIndicator label="KL3 LLRF" status={data?.kl3LlrfPowerStatus || 'FAULT'} />
+            <StatusIndicator label="KL1 ILK" status={data?.kl1PwrIlkStatus || 'FAULT'} />
+            <StatusIndicator label="KL2 ILK" status={data?.kl2PwrIlkStatus || 'FAULT'} />
+            <StatusIndicator label="KL3 ILK" status={data?.kl3PwrIlkStatus || 'FAULT'} />
             <StatusIndicator label="Системы" status={data?.systemsStatus || 'FAULT'} />
             <StatusIndicator label="Инжектор" status={data?.injectorStatus || 'FAULT'} />
             <StatusIndicator label="ВЧ" status={data?.rfStatus || 'FAULT'} />

@@ -21,4 +21,8 @@ public class BoosterData {
     private InjectionExtractionData extraction;
     private String rfStatus;
     private String magnetStatus;
+    private String cav1LlrfModulatorStatus;
+    private String cav2LlrfModulatorStatus;
+    private String cav3LlrfModulatorStatus;
+    private String powerSupplyStatus;
 }

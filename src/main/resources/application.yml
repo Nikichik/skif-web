@@ -21,13 +21,25 @@ epics:
       rf-status: "LINAC:RF:STATUS"
       injector-status: "LINAC:INJ:STATUS"
       systems-status: "LINAC:SYS:STATUS"
+      kl1-llrf-power-status: "RF-LN:KL1:LLRF-PwrOn:Sts"
+      kl2-llrf-power-status: "RF-LN:KL2:LLRF-PwrOn:Sts"
+      kl3-llrf-power-status: "RF-LN:KL3:LLRF-PwrOn:Sts"
+      kl1-pwr-ilk-status: "RF-LN:KL1-PwrILK:Sts"
+      kl2-pwr-ilk-status: "RF-LN:KL2-PwrILK:Sts"
+      kl3-pwr-ilk-status: "RF-LN:KL3-PwrILK:Sts"
     booster:
       bd1: "MG-BR:BD1-I:Wf"
       bd2: "MG-BR:BD2-I:Wf"
       bf: "MG-BR:BF-I:Wf"
-      beam-current: "BI-BDS:DCCT-Ch1Wf10Data-Mes"
+      beam-current: "BI-BDS:DCCT-Ch1Wf10Data:Mes"
       rf-status: "BOOSTER:RF:STATUS"
       magnet-status: "BOOSTER:MAG:STATUS"
+      cav1-llrf-modulator-status: "RF-BR:CAV1:LLRF-ModulatorOn:Sts"
+      cav2-llrf-modulator-status: "RF-BR:CAV2:LLRF-ModulatorOn:Sts"
+      cav3-llrf-modulator-status: "RF-BR:CAV3:LLRF-ModulatorOn:Sts"
+      bd1-pson-status: "MG-BR:BD1-PSON:Cmd"
+      bd2-pson-status: "MG-BR:BD2-PSON:Cmd"
+      bf-pson-status: "MG-BR:BF-PSON:Cmd"
 
 management:
   endpoints:

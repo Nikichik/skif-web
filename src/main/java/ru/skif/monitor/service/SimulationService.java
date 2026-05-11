@@ -48,6 +48,12 @@ public class SimulationService {
                 .systemsStatus(randomStatus())
                 .injectorStatus(randomStatus())
                 .rfStatus(randomStatus())
+                .kl1LlrfPowerStatus(randomStatus())
+                .kl2LlrfPowerStatus(randomStatus())
+                .kl3LlrfPowerStatus(randomStatus())
+                .kl1PwrIlkStatus(randomStatus())
+                .kl2PwrIlkStatus(randomStatus())
+                .kl3PwrIlkStatus(randomStatus())
                 .build();
     }
 
@@ -171,6 +177,10 @@ public class SimulationService {
                         .time(extTime).energy(round2(extEnergy)).current(round3(Math.max(0, extCurrent))).build())
                 .rfStatus(randomStatus())
                 .magnetStatus(randomStatus())
+                .cav1LlrfModulatorStatus(randomStatus())
+                .cav2LlrfModulatorStatus(randomStatus())
+                .cav3LlrfModulatorStatus(randomStatus())
+                .powerSupplyStatus(randomStatus())
                 .build();
     }
 

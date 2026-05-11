@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class LinacData {
@@ -19,4 +19,10 @@ public class LinacData {
     private String systemsStatus;
     private String injectorStatus;
     private String rfStatus;
+    private String kl1LlrfPowerStatus;
+    private String kl2LlrfPowerStatus;
+    private String kl3LlrfPowerStatus;
+    private String kl1PwrIlkStatus;
+    private String kl2PwrIlkStatus;
+    private String kl3PwrIlkStatus;
 }

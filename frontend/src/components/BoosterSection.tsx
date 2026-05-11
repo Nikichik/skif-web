@@ -30,9 +30,10 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
       <div className="grid grid-cols-[200px_1fr] gap-4 items-stretch">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col items-center gap-3">
-            <StatusIndicator label="ВЧ-система" status={data?.rfStatus || 'FAULT'} shape="circle" />
-            <StatusIndicator label="Магнитная система" status={data?.magnetStatus || 'FAULT'} shape="square" />
-            <StatusIndicator label="Резерв" status="OK" shape="circle" />
+            <StatusIndicator label="CAV1" status={data?.cav1LlrfModulatorStatus || 'FAULT'} shape="circle" />
+            <StatusIndicator label="CAV2" status={data?.cav2LlrfModulatorStatus || 'FAULT'} shape="circle" />
+            <StatusIndicator label="CAV3" status={data?.cav3LlrfModulatorStatus || 'FAULT'} shape="circle" />
+            <StatusIndicator label="PSON" status={data?.powerSupplyStatus || 'FAULT'} shape="square" />
           </div>
           <div className="flex flex-col gap-2 mt-2">
             <ValueCard label="Энергия впуска" value={data?.injection.energy ?? null} unit="МэВ" />
