@@ -18,31 +18,32 @@ import java.util.concurrent.atomic.AtomicReference;
 public class DataCacheService {
 
     private final EpicsConfig epicsConfig;
-    private final SimulationService simulationService;
     private final EpicsCaService epicsCaService;
     private final AtomicReference<MonitorSnapshot> latestSnapshot = new AtomicReference<>();
 
     @Scheduled(fixedRate = 1000)
     public void updateData() {
         if (epicsConfig.isSimulationMode()) {
-            MonitorSnapshot snapshot = simulationService.generateSnapshot();
-            latestSnapshot.set(snapshot);
-            log.trace("Simulation data updated");
+            // Hard-stop simulation path: this service is EPICS-only.
+            latestSnapshot.set(null);
+            log.warn("simulation-mode=true but simulation is disabled in EPICS-only mode");
             return;
         }
 
+        Optional<LinacData> linacData = epicsCaService.readLinacData();
         Optional<BoosterData> boosterData = epicsCaService.readBoosterData();
-        if (boosterData.isPresent()) {
-            LinacData linacBase = simulationService.generateLinacSnapshot();
-            LinacData linacData = epicsCaService.readLinacStatusData(linacBase).orElse(linacBase);
-            MonitorSnapshot snapshot = MonitorSnapshot.of(
-                    linacData,
-                    boosterData.get()
-            );
+
+        if (linacData.isPresent() || boosterData.isPresent()) {
+            MonitorSnapshot snapshot = MonitorSnapshot.builder()
+                    .timestamp(java.time.Instant.now().toString())
+                    .linac(linacData.orElse(null))
+                    .booster(boosterData.orElse(null))
+                    .build();
             latestSnapshot.set(snapshot);
             log.trace("EPICS data updated");
         } else {
-            log.warn("EPICS read failed, keeping last-good snapshot");
+            latestSnapshot.set(null);
+            log.warn("EPICS read failed, no real data available");
         }
     }
 

@@ -26,32 +26,32 @@ export default function PulseChart({
   yDomain,
   series,
   xDomain,
-  xLabel = 'Ğ²Ñ€ĞµĞ¼Ñ, Ğ¼ĞºÑ',
-  xUnit = 'Ğ¼ĞºÑ',
+  xLabel = 'âğåìÿ, ìêñ',
+  xUnit = 'ìêñ',
 }: PulseChartProps) {
   const chartData = normalizeChartData(data);
   const computedYDomain = yDomain || computeTightDomain(chartData.map(p => p.v));
 
   return (
     <div className="bg-panel-card border border-panel-border rounded-lg p-3">
-      <h4 className="text-xs text-gray-400 mb-2">{title}</h4>
+      <h4 className="text-sm text-gray-300 mb-2">{title}</h4>
       <ResponsiveContainer width="100%" height={320}>
-        <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 15 }}>
+        <LineChart data={chartData} margin={{ top: 5, right: 12, left: 8, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1E3050" />
           <XAxis
             dataKey="t"
             type="number"
             domain={xDomain || ['dataMin', 'dataMax']}
-            tick={{ fontSize: 9, fill: '#64748B' }}
-            label={{ value: xLabel, position: 'insideBottom', offset: -10, style: { fontSize: 9, fill: '#64748B' } }}
+            tick={{ fontSize: 11, fill: '#94A3B8' }}
+            label={{ value: xLabel, position: 'insideBottom', offset: -10, style: { fontSize: 11, fill: '#94A3B8' } }}
           />
           <YAxis
-            tick={{ fontSize: 9, fill: '#64748B' }}
+            tick={{ fontSize: 11, fill: '#94A3B8' }}
             domain={computedYDomain}
-            label={{ value: yLabel, angle: -90, position: 'insideLeft', offset: 10, style: { fontSize: 9, fill: '#64748B' } }}
+            label={{ value: yLabel, angle: -90, position: 'insideLeft', offset: 2, style: { fontSize: 11, fill: '#94A3B8' } }}
           />
           <Tooltip
-            contentStyle={{ backgroundColor: '#111D33', border: '1px solid #1E3050', fontSize: 11 }}
+            contentStyle={{ backgroundColor: '#111D33', border: '1px solid #1E3050', fontSize: 12 }}
             labelFormatter={(v) => `${v} ${xUnit}`}
           />
           {series && series.length > 0 ? (
@@ -62,13 +62,13 @@ export default function PulseChart({
                 dataKey={item.key}
                 stroke={item.color}
                 dot={false}
-                strokeWidth={1.6}
+                strokeWidth={1.9}
                 name={item.label}
                 isAnimationActive={false}
               />
             ))
           ) : (
-            <Line type="monotone" dataKey="v" stroke={color} dot={false} strokeWidth={1.5} isAnimationActive={false} />
+            <Line type="monotone" dataKey="v" stroke={color} dot={false} strokeWidth={1.9} isAnimationActive={false} />
           )}
         </LineChart>
       </ResponsiveContainer>

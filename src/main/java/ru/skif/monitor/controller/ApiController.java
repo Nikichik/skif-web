@@ -30,10 +30,12 @@ public class ApiController {
 
     @GetMapping("/health")
     public Map<String, Object> health() {
+        MonitorSnapshot snapshot = dataCacheService.getLatest();
         return Map.of(
                 "status", "UP",
                 "simulationMode", epicsConfig.isSimulationMode(),
-                "hasData", dataCacheService.getLatest() != null
+                "hasData", snapshot != null,
+                "epicsOnlyMode", true
         );
     }
 }

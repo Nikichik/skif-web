@@ -1,30 +1,30 @@
 export interface KlystronData {
   id: string;
-  power: number;
-  status: string;
+  power: number | null;
+  status: string | null;
   pulse: number[][];
 }
 
 export interface LinacData {
   klystrons: KlystronData[];
   phase: number[][];
-  gunCurrent: number;
-  linacCurrent: number;
-  systemsStatus: string;
-  injectorStatus: string;
-  rfStatus: string;
-  kl1LlrfPowerStatus: string;
-  kl2LlrfPowerStatus: string;
-  kl3LlrfPowerStatus: string;
-  kl1PwrIlkStatus: string;
-  kl2PwrIlkStatus: string;
-  kl3PwrIlkStatus: string;
+  gunCurrent: number | null;
+  linacCurrent: number | null;
+  systemsStatus: string | null;
+  injectorStatus: string | null;
+  rfStatus: string | null;
+  kl1LlrfPowerStatus: string | null;
+  kl2LlrfPowerStatus: string | null;
+  kl3LlrfPowerStatus: string | null;
+  kl1PwrIlkStatus: string | null;
+  kl2PwrIlkStatus: string | null;
+  kl3PwrIlkStatus: string | null;
 }
 
 export interface InjectionExtractionData {
-  time: number;
-  energy: number;
-  current: number;
+  time: number | null;
+  energy: number | null;
+  current: number | null;
 }
 
 export interface BoosterData {
@@ -35,16 +35,16 @@ export interface BoosterData {
   bf: number[][];
   injection: InjectionExtractionData;
   extraction: InjectionExtractionData;
-  rfStatus: string;
-  magnetStatus: string;
-  cav1LlrfModulatorStatus: string;
-  cav2LlrfModulatorStatus: string;
-  cav3LlrfModulatorStatus: string;
-  powerSupplyStatus: string;
+  rfStatus: string | null;
+  magnetStatus: string | null;
+  cav1LlrfModulatorStatus: string | null;
+  cav2LlrfModulatorStatus: string | null;
+  cav3LlrfModulatorStatus: string | null;
+  powerSupplyStatus: string | null;
 }
 
 export interface MonitorSnapshot {
   timestamp: string;
-  linac: LinacData;
-  booster: BoosterData;
+  linac: LinacData | null;
+  booster: BoosterData | null;
 }

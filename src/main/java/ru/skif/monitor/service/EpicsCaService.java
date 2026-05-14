@@ -15,9 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -30,8 +28,6 @@ public class EpicsCaService {
 
     private final EpicsConfig epicsConfig;
     private final CurrentCalculationService currentCalculationService;
-    private final AtomicReference<double[]> lastGoodBeamCurrent = new AtomicReference<>();
-    private final Map<String, String> lastGoodScalarValues = new ConcurrentHashMap<>();
 
     public Optional<BoosterData> readBoosterData() {
         try {
@@ -40,13 +36,13 @@ public class EpicsCaService {
             double[] bd2Raw = readWaveform(resolvePv(boosterPv, "bd2", "MG-BR:BD2-I:Wf"));
             double[] bfRaw = readWaveform(resolvePv(boosterPv, "bf", "MG-BR:BF-I:Wf"));
             String beamPv = resolvePv(boosterPv, "beam-current", "BI-BDS:DCCT-Ch1Wf10Data:Mes");
-            double[] beamRaw = tryReadBeamCurrent(beamPv);
-            String cav1 = toUiStatus(tryReadScalarWithFallback(resolvePv(boosterPv, "cav1-llrf-modulator-status", "RF-BR:CAV1:LLRF-ModulatorOn:Sts"), "NO"));
-            String cav2 = toUiStatus(tryReadScalarWithFallback(resolvePv(boosterPv, "cav2-llrf-modulator-status", "RF-BR:CAV2:LLRF-ModulatorOn:Sts"), "NO"));
-            String cav3 = toUiStatus(tryReadScalarWithFallback(resolvePv(boosterPv, "cav3-llrf-modulator-status", "RF-BR:CAV3:LLRF-ModulatorOn:Sts"), "NO"));
-            String bd1Pson = tryReadScalarWithFallback(resolvePv(boosterPv, "bd1-pson-status", "MG-BR:BD1-PSON:Cmd"), "NO");
-            String bd2Pson = tryReadScalarWithFallback(resolvePv(boosterPv, "bd2-pson-status", "MG-BR:BD2-PSON:Cmd"), "NO");
-            String bfPson = tryReadScalarWithFallback(resolvePv(boosterPv, "bf-pson-status", "MG-BR:BF-PSON:Cmd"), "NO");
+            double[] beamRaw = readWaveform(beamPv);
+            String cav1 = toUiStatus(readScalar(resolvePv(boosterPv, "cav1-llrf-modulator-status", "RF-BR:CAV1:LLRF-ModulatorOn:Sts")));
+            String cav2 = toUiStatus(readScalar(resolvePv(boosterPv, "cav2-llrf-modulator-status", "RF-BR:CAV2:LLRF-ModulatorOn:Sts")));
+            String cav3 = toUiStatus(readScalar(resolvePv(boosterPv, "cav3-llrf-modulator-status", "RF-BR:CAV3:LLRF-ModulatorOn:Sts")));
+            String bd1Pson = readScalar(resolvePv(boosterPv, "bd1-pson-status", "MG-BR:BD1-PSON:Cmd"));
+            String bd2Pson = readScalar(resolvePv(boosterPv, "bd2-pson-status", "MG-BR:BD2-PSON:Cmd"));
+            String bfPson = readScalar(resolvePv(boosterPv, "bf-pson-status", "MG-BR:BF-PSON:Cmd"));
             String powerSupplyStatus = (isYes(bd1Pson) && isYes(bd2Pson) && isYes(bfPson)) ? "OK" : "FAULT";
 
             if (bd1Raw.length == 0 || bd2Raw.length == 0 || bfRaw.length == 0) {
@@ -66,39 +62,41 @@ public class EpicsCaService {
         }
     }
 
-    public Optional<LinacData> readLinacStatusData(LinacData baseLinac) {
+    public Optional<LinacData> readLinacData() {
         try {
             Map<String, String> linacPv = epicsConfig.getPv().get("linac");
-            return Optional.of(baseLinac.toBuilder()
-                    .kl1LlrfPowerStatus(toUiStatus(tryReadScalarWithFallback(resolvePv(linacPv, "kl1-llrf-power-status", "RF-LN:KL1:LLRF-PwrOn:Sts"), "NO")))
-                    .kl2LlrfPowerStatus(toUiStatus(tryReadScalarWithFallback(resolvePv(linacPv, "kl2-llrf-power-status", "RF-LN:KL2:LLRF-PwrOn:Sts"), "NO")))
-                    .kl3LlrfPowerStatus(toUiStatus(tryReadScalarWithFallback(resolvePv(linacPv, "kl3-llrf-power-status", "RF-LN:KL3:LLRF-PwrOn:Sts"), "NO")))
-                    .kl1PwrIlkStatus(toUiStatus(tryReadScalarWithFallback(resolvePv(linacPv, "kl1-pwr-ilk-status", "RF-LN:KL1-PwrILK:Sts"), "NO")))
-                    .kl2PwrIlkStatus(toUiStatus(tryReadScalarWithFallback(resolvePv(linacPv, "kl2-pwr-ilk-status", "RF-LN:KL2-PwrILK:Sts"), "NO")))
-                    .kl3PwrIlkStatus(toUiStatus(tryReadScalarWithFallback(resolvePv(linacPv, "kl3-pwr-ilk-status", "RF-LN:KL3-PwrILK:Sts"), "NO")))
+            double kl1Power = readNumericScalar(resolvePv(linacPv, "klystron1-power", "KL1:POWER"));
+            double kl2Power = readNumericScalar(resolvePv(linacPv, "klystron2-power", "KL2:POWER"));
+            double kl3Power = readNumericScalar(resolvePv(linacPv, "klystron3-power", "KL3:POWER"));
+            String kl1Status = toUiStatus(readScalar(resolvePv(linacPv, "klystron1-status", "KL1:STATUS")));
+            String kl2Status = toUiStatus(readScalar(resolvePv(linacPv, "klystron2-status", "KL2:STATUS")));
+            String kl3Status = toUiStatus(readScalar(resolvePv(linacPv, "klystron3-status", "KL3:STATUS")));
+            double gunCurrent = readNumericScalar(resolvePv(linacPv, "gun-current", "LINAC:GUN:CURRENT"));
+            double linacCurrent = readNumericScalar(resolvePv(linacPv, "linac-current", "LINAC:CURRENT"));
+
+            List<double[]> noWaveform = List.of();
+            return Optional.of(LinacData.builder()
+                    .klystrons(List.of(
+                            ru.skif.monitor.model.KlystronData.builder().id("KL1").power(kl1Power).status(kl1Status).pulse(noWaveform).build(),
+                            ru.skif.monitor.model.KlystronData.builder().id("KL2").power(kl2Power).status(kl2Status).pulse(noWaveform).build(),
+                            ru.skif.monitor.model.KlystronData.builder().id("KL3").power(kl3Power).status(kl3Status).pulse(noWaveform).build()
+                    ))
+                    .phase(List.of())
+                    .gunCurrent(gunCurrent)
+                    .linacCurrent(linacCurrent)
+                    .systemsStatus(toUiStatus(readScalar(resolvePv(linacPv, "systems-status", "LINAC:SYS:STATUS"))))
+                    .injectorStatus(toUiStatus(readScalar(resolvePv(linacPv, "injector-status", "LINAC:INJ:STATUS"))))
+                    .rfStatus(toUiStatus(readScalar(resolvePv(linacPv, "rf-status", "LINAC:RF:STATUS"))))
+                    .kl1LlrfPowerStatus(toUiStatus(readScalar(resolvePv(linacPv, "kl1-llrf-power-status", "RF-LN:KL1:LLRF-PwrOn:Sts"))))
+                    .kl2LlrfPowerStatus(toUiStatus(readScalar(resolvePv(linacPv, "kl2-llrf-power-status", "RF-LN:KL2:LLRF-PwrOn:Sts"))))
+                    .kl3LlrfPowerStatus(toUiStatus(readScalar(resolvePv(linacPv, "kl3-llrf-power-status", "RF-LN:KL3:LLRF-PwrOn:Sts"))))
+                    .kl1PwrIlkStatus(toUiStatus(readScalar(resolvePv(linacPv, "kl1-pwr-ilk-status", "RF-LN:KL1-PwrILK:Sts"))))
+                    .kl2PwrIlkStatus(toUiStatus(readScalar(resolvePv(linacPv, "kl2-pwr-ilk-status", "RF-LN:KL2-PwrILK:Sts"))))
+                    .kl3PwrIlkStatus(toUiStatus(readScalar(resolvePv(linacPv, "kl3-pwr-ilk-status", "RF-LN:KL3-PwrILK:Sts"))))
                     .build());
         } catch (Exception e) {
-            log.warn("Failed reading LINAC EPICS statuses via CA: {}", e.getMessage());
+            log.warn("Failed reading LINAC EPICS data via CA: {}", e.getMessage());
             return Optional.empty();
-        }
-    }
-
-    private double[] tryReadBeamCurrent(String beamPv) {
-        try {
-            double[] beamRaw = readWaveform(beamPv);
-            if (beamRaw.length == 0) {
-                throw new IllegalStateException("empty waveform");
-            }
-            lastGoodBeamCurrent.set(beamRaw);
-            return beamRaw;
-        } catch (Exception e) {
-            double[] last = lastGoodBeamCurrent.get();
-            if (last != null && last.length > 0) {
-                log.warn("Beam current PV '{}' unavailable ({}), using last-good waveform", beamPv, e.getMessage());
-                return last;
-            }
-            log.warn("Beam current PV '{}' unavailable ({}), using zero waveform fallback", beamPv, e.getMessage());
-            return new double[TARGET_POINTS];
         }
     }
 
@@ -186,25 +184,6 @@ public class EpicsCaService {
         return out.toString();
     }
 
-    private String tryReadScalarWithFallback(String pvName, String defaultValue) {
-        try {
-            String rawValue = readScalar(pvName);
-            if (rawValue == null || rawValue.isBlank()) {
-                throw new IllegalStateException("empty scalar value");
-            }
-            lastGoodScalarValues.put(pvName, rawValue);
-            return rawValue;
-        } catch (Exception e) {
-            String last = lastGoodScalarValues.get(pvName);
-            if (last != null && !last.isBlank()) {
-                log.warn("Scalar PV '{}' unavailable ({}), using last-good value", pvName, e.getMessage());
-                return last;
-            }
-            log.warn("Scalar PV '{}' unavailable ({}), using default '{}'", pvName, e.getMessage(), defaultValue);
-            return defaultValue;
-        }
-    }
-
     private String readScalar(String pvName) throws Exception {
         String mergedOutput = runCaget(pvName);
         String[] tokens = mergedOutput.trim().split("\\s+");
@@ -213,7 +192,12 @@ public class EpicsCaService {
                 return token.trim();
             }
         }
-        return "";
+        throw new IllegalStateException("empty scalar value for " + pvName);
+    }
+
+    private double readNumericScalar(String pvName) throws Exception {
+        String raw = readScalar(pvName);
+        return Double.parseDouble(raw);
     }
 
     private String runCaget(String pvName) throws Exception {
