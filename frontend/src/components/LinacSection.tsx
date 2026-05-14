@@ -19,7 +19,6 @@ export default function LinacSection({ data }: LinacSectionProps) {
 
   const powerData = buildPowerData(kl1, kl2, kl3);
   const phaseData = buildPhaseData(kl1?.phase || null, kl2?.phase || null, kl3?.phase || null);
-  const rfData = buildRfData(kl1, kl2, kl3);
 
   const statusItems = [
     { label: 'KL1', status: kl1?.status },
@@ -56,7 +55,7 @@ export default function LinacSection({ data }: LinacSectionProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 2xl:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-3">
           {powerData && (
             <PulseChart
               title="Мощность клистронов KL1 / KL2 / KL3"
@@ -81,17 +80,6 @@ export default function LinacSection({ data }: LinacSectionProps) {
                 { key: 'ph2', label: 'KL2', color: '#A78BFA' },
                 { key: 'ph3', label: 'KL3', color: '#F97316' },
               ]}
-            />
-          )}
-          {rfData && (
-            <PulseChart
-              title="ВЧ система"
-              data={rfData}
-              yLabel="усл. ед."
-              color="#22C55E"
-              xDomain={[0, 1]}
-              xLabel="время, с"
-              xUnit="с"
             />
           )}
         </div>
@@ -141,20 +129,3 @@ function buildPhaseData(kl1Phase: number[][] | null, kl2Phase: number[][] | null
     ph3: kl3Phase[i][1],
   }));
 }
-
-function buildRfData(kl1?: KlystronData, kl2?: KlystronData, kl3?: KlystronData) {
-  if (
-    kl1?.power === null || kl1?.power === undefined ||
-    kl2?.power === null || kl2?.power === undefined ||
-    kl3?.power === null || kl3?.power === undefined
-  ) {
-    return null;
-  }
-
-  const avg = (kl1.power + kl2.power + kl3.power) / 3.0;
-  return [
-    [0, avg],
-    [1, avg],
-  ];
-}
-
