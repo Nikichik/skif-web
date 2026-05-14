@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
+ï»¿import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface PulseSeries {
   key: string;
@@ -26,8 +26,8 @@ export default function PulseChart({
   yDomain,
   series,
   xDomain,
-  xLabel = 'âğåìÿ, ìêñ',
-  xUnit = 'ìêñ',
+  xLabel = 'Ğ²Ñ€ĞµĞ¼Ñ, Ğ¼ĞºÑ',
+  xUnit = 'Ğ¼ĞºÑ',
 }: PulseChartProps) {
   const chartData = normalizeChartData(data);
   const computedYDomain = yDomain || computeTightDomain(chartData.map(p => p.v));
@@ -103,3 +103,4 @@ function computeTightDomain(values: number[]): [number, number] {
   const pad = span * 0.15;
   return [min - pad, max + pad];
 }
+

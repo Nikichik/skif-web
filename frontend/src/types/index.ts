@@ -3,6 +3,7 @@ export interface KlystronData {
   power: number | null;
   status: string | null;
   pulse: number[][];
+  phase: number[][];
 }
 
 export interface LinacData {
@@ -33,6 +34,9 @@ export interface BoosterData {
   bd1: number[][];
   bd2: number[][];
   bf: number[][];
+  cav1Voltage: number[][];
+  cav2Voltage: number[][];
+  cav3Voltage: number[][];
   injection: InjectionExtractionData;
   extraction: InjectionExtractionData;
   rfStatus: string | null;

@@ -37,6 +37,7 @@ public class SimulationService {
                     .power(round2(power))
                     .status(status)
                     .pulse(pulse)
+                    .phase(List.of())
                     .build());
         }
 

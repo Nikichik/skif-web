@@ -13,7 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class KlystronData {
     private String id;
-    private double power;
+    private Double power;
     private String status;
     private List<double[]> pulse;
+    private List<double[]> phase;
 }

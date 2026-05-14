@@ -14,8 +14,8 @@ import java.util.List;
 public class LinacData {
     private List<KlystronData> klystrons;
     private List<double[]> phase;
-    private double gunCurrent;
-    private double linacCurrent;
+    private Double gunCurrent;
+    private Double linacCurrent;
     private String systemsStatus;
     private String injectorStatus;
     private String rfStatus;

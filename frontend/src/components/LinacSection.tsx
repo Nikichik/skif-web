@@ -1,4 +1,4 @@
-import type { LinacData, KlystronData } from '../types';
+п»їimport type { LinacData, KlystronData } from '../types';
 import StatusIndicator from './StatusIndicator';
 import ValueCard from './ValueCard';
 import PulseChart from './PulseChart';
@@ -18,7 +18,7 @@ export default function LinacSection({ data }: LinacSectionProps) {
   const kl3 = kl.find(k => k.id === 'KL3');
 
   const powerData = buildPowerData(kl1, kl2, kl3);
-  const phaseData = buildPhaseData(data.phase || null);
+  const phaseData = buildPhaseData(kl1?.phase || null, kl2?.phase || null, kl3?.phase || null);
   const rfData = buildRfData(kl1, kl2, kl3);
 
   const statusItems = [
@@ -31,15 +31,15 @@ export default function LinacSection({ data }: LinacSectionProps) {
     { label: 'KL1 ILK', status: data.kl1PwrIlkStatus },
     { label: 'KL2 ILK', status: data.kl2PwrIlkStatus },
     { label: 'KL3 ILK', status: data.kl3PwrIlkStatus },
-    { label: 'Системы', status: data.systemsStatus },
-    { label: 'Инжектор', status: data.injectorStatus },
-    { label: 'ВЧ', status: data.rfStatus },
+    { label: 'РЎРёСЃС‚РµРјС‹', status: data.systemsStatus },
+    { label: 'РРЅР¶РµРєС‚РѕСЂ', status: data.injectorStatus },
+    { label: 'Р’Р§', status: data.rfStatus },
   ].filter(item => !!item.status);
 
   return (
     <section className="px-4 py-3">
       <h2 className="text-xl font-bold text-white mb-3 border-b border-panel-border pb-2">
-        Линейный ускоритель
+        Р›РёРЅРµР№РЅС‹Р№ СѓСЃРєРѕСЂРёС‚РµР»СЊ
       </h2>
       <div className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-4">
         <div className="flex flex-col gap-3">
@@ -51,17 +51,17 @@ export default function LinacSection({ data }: LinacSectionProps) {
             </div>
           )}
           <div className="flex flex-col gap-2 mt-2">
-            <ValueCard label="Ток пушки" value={data.gunCurrent ?? null} unit="мА" />
-            <ValueCard label="Ток линака" value={data.linacCurrent ?? null} unit="мА" />
+            <ValueCard label="РўРѕРє РїСѓС€РєРё" value={data.gunCurrent ?? null} unit="РјРђ" />
+            <ValueCard label="РўРѕРє Р»РёРЅР°РєР°" value={data.linacCurrent ?? null} unit="РјРђ" />
           </div>
         </div>
 
         <div className="grid grid-cols-1 2xl:grid-cols-3 gap-3">
           {powerData && (
             <PulseChart
-              title="Мощность клистронов KL1 / KL2 / KL3"
+              title="РњРѕС‰РЅРѕСЃС‚СЊ РєР»РёСЃС‚СЂРѕРЅРѕРІ KL1 / KL2 / KL3"
               data={powerData}
-              yLabel="МВт"
+              yLabel="РњР’С‚"
               yDomain={[0, 60]}
               series={[
                 { key: 'kl1', label: 'KL1', color: '#3B82F6' },
@@ -72,22 +72,26 @@ export default function LinacSection({ data }: LinacSectionProps) {
           )}
           {phaseData && (
             <PulseChart
-              title="Фаза клистронов"
+              title="Р¤Р°Р·Р° РєР»РёСЃС‚СЂРѕРЅРѕРІ"
               data={phaseData}
-              yLabel="градусы"
+              yLabel="РіСЂР°РґСѓСЃС‹"
               yDomain={[-180, 180]}
-              color="#06B6D4"
+              series={[
+                { key: 'ph1', label: 'KL1', color: '#06B6D4' },
+                { key: 'ph2', label: 'KL2', color: '#A78BFA' },
+                { key: 'ph3', label: 'KL3', color: '#F97316' },
+              ]}
             />
           )}
           {rfData && (
             <PulseChart
-              title="ВЧ система"
+              title="Р’Р§ СЃРёСЃС‚РµРјР°"
               data={rfData}
-              yLabel="усл. ед."
+              yLabel="СѓСЃР». РµРґ."
               color="#22C55E"
               xDomain={[0, 1]}
-              xLabel="время, с"
-              xUnit="с"
+              xLabel="РІСЂРµРјСЏ, СЃ"
+              xUnit="СЃ"
             />
           )}
         </div>
@@ -123,12 +127,19 @@ function buildPowerData(kl1?: KlystronData, kl2?: KlystronData, kl3?: KlystronDa
   ];
 }
 
-function buildPhaseData(phase: number[][] | null) {
-  if (!phase || phase.length === 0) {
+function buildPhaseData(kl1Phase: number[][] | null, kl2Phase: number[][] | null, kl3Phase: number[][] | null) {
+  if (!kl1Phase || !kl2Phase || !kl3Phase || kl1Phase.length === 0 || kl2Phase.length === 0 || kl3Phase.length === 0) {
     return null;
   }
 
-  return phase.map(([t, p]) => ({ t, v: p }));
+  const len = Math.min(kl1Phase.length, kl2Phase.length, kl3Phase.length);
+  return Array.from({ length: len }, (_, i) => ({
+    t: kl1Phase[i][0],
+    v: kl1Phase[i][1],
+    ph1: kl1Phase[i][1],
+    ph2: kl2Phase[i][1],
+    ph3: kl3Phase[i][1],
+  }));
 }
 
 function buildRfData(kl1?: KlystronData, kl2?: KlystronData, kl3?: KlystronData) {
@@ -146,3 +157,4 @@ function buildRfData(kl1?: KlystronData, kl2?: KlystronData, kl3?: KlystronData)
     [1, avg],
   ];
 }
+

@@ -1,4 +1,4 @@
-interface ValueCardProps {
+﻿interface ValueCardProps {
   label: string;
   value: number | null;
   unit: string;
@@ -19,3 +19,4 @@ export default function ValueCard({ label, value, unit }: ValueCardProps) {
     </div>
   );
 }
+

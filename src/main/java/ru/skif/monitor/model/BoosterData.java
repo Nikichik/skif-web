@@ -17,6 +17,9 @@ public class BoosterData {
     private List<double[]> bd1;
     private List<double[]> bd2;
     private List<double[]> bf;
+    private List<double[]> cav1Voltage;
+    private List<double[]> cav2Voltage;
+    private List<double[]> cav3Voltage;
     private InjectionExtractionData injection;
     private InjectionExtractionData extraction;
     private String rfStatus;
