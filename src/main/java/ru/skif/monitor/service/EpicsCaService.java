@@ -26,7 +26,7 @@ public class EpicsCaService {
     private static final int TARGET_POINTS = 1000;
     private static final int CAVITY_VOLTAGE_MAX_READ = 20000;
     private static final double INJECTION_TIME = 0.05;
-    private static final double EXTRACTION_TIME = 0.9;
+    private static final double EXTRACTION_TIME = 0.4;
 
     private final EpicsConfig epicsConfig;
     private final CurrentCalculationService currentCalculationService;

@@ -1,13 +1,14 @@
-﻿import type { LinacData, KlystronData } from '../types';
+﻿import type { LinacData, KlystronData, BoosterData } from '../types';
 import StatusIndicator from './StatusIndicator';
 import ValueCard from './ValueCard';
 import PulseChart from './PulseChart';
 
 interface LinacSectionProps {
   data: LinacData | null;
+  booster: BoosterData | null;
 }
 
-export default function LinacSection({ data }: LinacSectionProps) {
+export default function LinacSection({ data, booster }: LinacSectionProps) {
   if (!data) {
     return null;
   }
@@ -17,8 +18,9 @@ export default function LinacSection({ data }: LinacSectionProps) {
   const kl2 = kl.find(k => k.id === 'KL2');
   const kl3 = kl.find(k => k.id === 'KL3');
 
-  const powerData = buildPowerData(kl1, kl2, kl3);
+  const powerData = buildPowerData(kl1?.pulse || null, kl2?.pulse || null, kl3?.pulse || null);
   const phaseData = buildPhaseData(kl1?.phase || null, kl2?.phase || null, kl3?.phase || null);
+  const rfData = buildRfData(booster?.cav1Voltage || [], booster?.cav2Voltage || [], booster?.cav3Voltage || []);
 
   const statusItems = [
     { label: 'KL1', status: kl1?.status },
@@ -30,14 +32,11 @@ export default function LinacSection({ data }: LinacSectionProps) {
     { label: 'KL1 ILK', status: data.kl1PwrIlkStatus },
     { label: 'KL2 ILK', status: data.kl2PwrIlkStatus },
     { label: 'KL3 ILK', status: data.kl3PwrIlkStatus },
-    { label: 'Системы', status: data.systemsStatus },
-    { label: 'Инжектор', status: data.injectorStatus },
-    { label: 'ВЧ', status: data.rfStatus },
   ].filter(item => !!item.status);
 
   return (
     <section className="px-4 py-3">
-      <h2 className="text-xl font-bold text-white mb-3 border-b border-panel-border pb-2">
+      <h2 className="text-4xl font-bold text-white mb-3 border-b border-panel-border pb-2">
         Линейный ускоритель
       </h2>
       <div className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-4">
@@ -55,13 +54,13 @@ export default function LinacSection({ data }: LinacSectionProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 2xl:grid-cols-3 gap-3">
           {powerData && (
             <PulseChart
               title="Мощность клистронов KL1 / KL2 / KL3"
               data={powerData}
-              yLabel="МВт"
-              yDomain={[0, 60]}
+              yLabel="норм., %"
+              yDomain={[0, 100]}
               series={[
                 { key: 'kl1', label: 'KL1', color: '#3B82F6' },
                 { key: 'kl2', label: 'KL2', color: '#22C55E' },
@@ -82,50 +81,97 @@ export default function LinacSection({ data }: LinacSectionProps) {
               ]}
             />
           )}
+          {rfData && (
+            <div className="bg-panel-card border border-panel-border rounded-lg p-3">
+              <div className="flex flex-wrap items-center gap-4 mb-2">
+                {booster?.cav1LlrfModulatorStatus && <StatusIndicator label="CAV1" status={booster.cav1LlrfModulatorStatus} />}
+                {booster?.cav2LlrfModulatorStatus && <StatusIndicator label="CAV2" status={booster.cav2LlrfModulatorStatus} />}
+                {booster?.cav3LlrfModulatorStatus && <StatusIndicator label="CAV3" status={booster.cav3LlrfModulatorStatus} />}
+                {booster?.powerSupplyStatus && <StatusIndicator label="PSON" status={booster.powerSupplyStatus} />}
+              </div>
+              <PulseChart
+                title="ВЧ система (CAV1 + CAV2 + CAV3)"
+                data={rfData}
+                yLabel="кВ"
+                color="#22C55E"
+                xDomain={[0, 1]}
+                xLabel="время, с"
+                xUnit="с"
+              />
+            </div>
+          )}
         </div>
       </div>
     </section>
   );
 }
 
-function buildPowerData(kl1?: KlystronData, kl2?: KlystronData, kl3?: KlystronData) {
-  if (
-    kl1?.power === null || kl1?.power === undefined ||
-    kl2?.power === null || kl2?.power === undefined ||
-    kl3?.power === null || kl3?.power === undefined
-  ) {
+function buildPowerData(kl1: number[][] | null, kl2: number[][] | null, kl3: number[][] | null) {
+  if (!kl1?.length || !kl2?.length || !kl3?.length) {
     return null;
   }
 
-  return [
-    {
-      t: 0,
-      v: kl1.power,
-      kl1: kl1.power,
-      kl2: kl2.power,
-      kl3: kl3.power,
-    },
-    {
-      t: 1,
-      v: kl1.power,
-      kl1: kl1.power,
-      kl2: kl2.power,
-      kl3: kl3.power,
-    },
-  ];
+  const len = Math.min(kl1.length, kl2.length, kl3.length);
+  const s1 = movingAverage(kl1.slice(0, len).map(v => Math.abs(v[1])), 15);
+  const s2 = movingAverage(kl2.slice(0, len).map(v => Math.abs(v[1])), 15);
+  const s3 = movingAverage(kl3.slice(0, len).map(v => Math.abs(v[1])), 15);
+  const peak = Math.max(1e-9, ...s1, ...s2, ...s3);
+
+  return Array.from({ length: len }, (_, i) => ({
+    t: kl1[i][0],
+    v: (s1[i] / peak) * 100,
+    kl1: (s1[i] / peak) * 100,
+    kl2: (s2[i] / peak) * 100,
+    kl3: (s3[i] / peak) * 100,
+  }));
 }
 
 function buildPhaseData(kl1Phase: number[][] | null, kl2Phase: number[][] | null, kl3Phase: number[][] | null) {
-  if (!kl1Phase || !kl2Phase || !kl3Phase || kl1Phase.length === 0 || kl2Phase.length === 0 || kl3Phase.length === 0) {
+  if (!kl1Phase?.length || !kl2Phase?.length || !kl3Phase?.length) {
     return null;
   }
 
   const len = Math.min(kl1Phase.length, kl2Phase.length, kl3Phase.length);
+  const ph1 = movingAverage(kl1Phase.slice(0, len).map(v => v[1]), 9);
+  const ph2 = movingAverage(kl2Phase.slice(0, len).map(v => v[1]), 9);
+  const ph3 = movingAverage(kl3Phase.slice(0, len).map(v => v[1]), 9);
+
   return Array.from({ length: len }, (_, i) => ({
     t: kl1Phase[i][0],
-    v: kl1Phase[i][1],
-    ph1: kl1Phase[i][1],
-    ph2: kl2Phase[i][1],
-    ph3: kl3Phase[i][1],
+    v: ph1[i],
+    ph1: ph1[i],
+    ph2: ph2[i],
+    ph3: ph3[i],
   }));
+}
+
+function buildRfData(c1: number[][], c2: number[][], c3: number[][]) {
+  if (!c1?.length || !c2?.length || !c3?.length) {
+    return null;
+  }
+
+  const len = Math.min(c1.length, c2.length, c3.length);
+  const sum = Array.from({ length: len }, (_, i) => c1[i][1] + c2[i][1] + c3[i][1]);
+  const smooth = movingAverage(sum, 21);
+
+  return Array.from({ length: len }, (_, i) => ({
+    t: c1[i][0],
+    v: smooth[i],
+  }));
+}
+
+function movingAverage(values: number[], windowSize: number) {
+  if (windowSize <= 1 || values.length === 0) {
+    return values;
+  }
+  const half = Math.floor(windowSize / 2);
+  return values.map((_, i) => {
+    const start = Math.max(0, i - half);
+    const end = Math.min(values.length - 1, i + half);
+    let sum = 0;
+    for (let j = start; j <= end; j++) {
+      sum += values[j];
+    }
+    return sum / (end - start + 1);
+  });
 }
