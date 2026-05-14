@@ -16,6 +16,7 @@ interface PulseChartProps {
   xDomain?: [number, number];
   xLabel?: string;
   xUnit?: string;
+  height?: number;
 }
 
 export default function PulseChart({
@@ -28,6 +29,7 @@ export default function PulseChart({
   xDomain,
   xLabel = 'время, мкс',
   xUnit = 'мкс',
+  height = 320,
 }: PulseChartProps) {
   const chartData = normalizeChartData(data);
   const computedYDomain = yDomain || computeTightDomain(chartData.map(p => p.v));
@@ -35,7 +37,7 @@ export default function PulseChart({
   return (
     <div className="bg-panel-card border border-panel-border rounded-lg p-3">
       <h4 className="text-sm text-gray-300 mb-2">{title}</h4>
-      <ResponsiveContainer width="100%" height={320}>
+      <ResponsiveContainer width="100%" height={height}>
         <LineChart data={chartData} margin={{ top: 5, right: 12, left: 8, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1E3050" />
           <XAxis
@@ -103,4 +105,3 @@ function computeTightDomain(values: number[]): [number, number] {
   const pad = span * 0.15;
   return [min - pad, max + pad];
 }
-

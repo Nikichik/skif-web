@@ -23,81 +23,88 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
   const rfData = buildRfData(booster?.cav1Voltage || [], booster?.cav2Voltage || [], booster?.cav3Voltage || []);
 
   const statusItems = [
-    { label: 'KL1', status: kl1?.status },
-    { label: 'KL2', status: kl2?.status },
-    { label: 'KL3', status: kl3?.status },
-    { label: 'KL1 LLRF', status: data.kl1LlrfPowerStatus },
-    { label: 'KL2 LLRF', status: data.kl2LlrfPowerStatus },
-    { label: 'KL3 LLRF', status: data.kl3LlrfPowerStatus },
-    { label: 'KL1 ILK', status: data.kl1PwrIlkStatus },
-    { label: 'KL2 ILK', status: data.kl2PwrIlkStatus },
-    { label: 'KL3 ILK', status: data.kl3PwrIlkStatus },
+    { label: 'Клистрон 1', status: kl1?.status },
+    { label: 'Клистрон 2', status: kl2?.status },
+    { label: 'Клистрон 3', status: kl3?.status },
+    { label: 'ВЧ 1', status: data.kl1LlrfPowerStatus },
+    { label: 'ВЧ 2', status: data.kl2LlrfPowerStatus },
+    { label: 'ВЧ 3', status: data.kl3LlrfPowerStatus },
+    { label: 'Блокировка 1', status: data.kl1PwrIlkStatus },
+    { label: 'Блокировка 2', status: data.kl2PwrIlkStatus },
+    { label: 'Блокировка 3', status: data.kl3PwrIlkStatus },
   ].filter(item => !!item.status);
 
   return (
-    <section className="px-4 py-3">
-      <h2 className="text-4xl font-bold text-white mb-3 border-b border-panel-border pb-2">
+    <section className="px-4 py-2">
+      <h2 className="text-2xl font-bold text-white mb-2 border-b border-panel-border pb-2">
         Линейный ускоритель
       </h2>
-      <div className="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-4">
-        <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-1 xl:grid-cols-[320px_1fr] gap-3">
+        <div className="flex flex-col gap-2">
           {statusItems.length > 0 && (
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               {statusItems.map(item => (
                 <StatusIndicator key={item.label} label={item.label} status={item.status!} />
               ))}
             </div>
           )}
-          <div className="flex flex-col gap-2 mt-2">
+          <div className="flex flex-col gap-2 mt-1">
             <ValueCard label="Ток пушки" value={data.gunCurrent ?? null} unit="мА" />
             <ValueCard label="Ток линака" value={data.linacCurrent ?? null} unit="мА" />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 2xl:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 2xl:grid-cols-3 gap-2">
           {powerData && (
             <PulseChart
-              title="Мощность клистронов KL1 / KL2 / KL3"
+              title="Мощность клистронов"
               data={powerData}
-              yLabel="норм., %"
+              yLabel="Относительная мощность, %"
               yDomain={[0, 100]}
               series={[
-                { key: 'kl1', label: 'KL1', color: '#3B82F6' },
-                { key: 'kl2', label: 'KL2', color: '#22C55E' },
-                { key: 'kl3', label: 'KL3', color: '#F59E0B' },
+                { key: 'kl1', label: 'Клистрон 1', color: '#3B82F6' },
+                { key: 'kl2', label: 'Клистрон 2', color: '#22C55E' },
+                { key: 'kl3', label: 'Клистрон 3', color: '#F59E0B' },
               ]}
+              height={210}
             />
           )}
           {phaseData && (
             <PulseChart
               title="Фаза клистронов"
               data={phaseData}
-              yLabel="градусы"
+              yLabel="Фаза, градусы"
               yDomain={[-180, 180]}
               series={[
-                { key: 'ph1', label: 'KL1', color: '#06B6D4' },
-                { key: 'ph2', label: 'KL2', color: '#A78BFA' },
-                { key: 'ph3', label: 'KL3', color: '#F97316' },
+                { key: 'ph1', label: 'Клистрон 1', color: '#06B6D4' },
+                { key: 'ph2', label: 'Клистрон 2', color: '#A78BFA' },
+                { key: 'ph3', label: 'Клистрон 3', color: '#F97316' },
               ]}
+              height={210}
             />
           )}
           {rfData && (
-            <div className="bg-panel-card border border-panel-border rounded-lg p-3">
-              <div className="flex flex-wrap items-center gap-4 mb-2">
-                {booster?.cav1LlrfModulatorStatus && <StatusIndicator label="CAV1" status={booster.cav1LlrfModulatorStatus} />}
-                {booster?.cav2LlrfModulatorStatus && <StatusIndicator label="CAV2" status={booster.cav2LlrfModulatorStatus} />}
-                {booster?.cav3LlrfModulatorStatus && <StatusIndicator label="CAV3" status={booster.cav3LlrfModulatorStatus} />}
-                {booster?.powerSupplyStatus && <StatusIndicator label="PSON" status={booster.powerSupplyStatus} />}
+            <div className="bg-panel-card border border-panel-border rounded-lg p-2">
+              <h4 className="text-sm text-gray-300 mb-2">ВЧ система</h4>
+              <div className="grid grid-cols-[130px_1fr] gap-2 items-start">
+                <div className="grid grid-cols-2 gap-2">
+                  {booster?.cav1LlrfModulatorStatus && <StatusIndicator label="Резонатор 1" status={booster.cav1LlrfModulatorStatus} />}
+                  {booster?.cav2LlrfModulatorStatus && <StatusIndicator label="Резонатор 2" status={booster.cav2LlrfModulatorStatus} />}
+                  {booster?.cav3LlrfModulatorStatus && <StatusIndicator label="Резонатор 3" status={booster.cav3LlrfModulatorStatus} />}
+                  {booster?.powerSupplyStatus && <StatusIndicator label="Питание" status={booster.powerSupplyStatus} />}
+                </div>
+                <PulseChart
+                  title=""
+                  data={rfData}
+                  yLabel="Мощность, кВт"
+                  yDomain={[0, 1]}
+                  color="#22C55E"
+                  xDomain={[0, 1]}
+                  xLabel="время, с"
+                  xUnit="с"
+                  height={175}
+                />
               </div>
-              <PulseChart
-                title="ВЧ система (CAV1 + CAV2 + CAV3)"
-                data={rfData}
-                yLabel="кВ"
-                color="#22C55E"
-                xDomain={[0, 1]}
-                xLabel="время, с"
-                xUnit="с"
-              />
             </div>
           )}
         </div>
@@ -132,9 +139,9 @@ function buildPhaseData(kl1Phase: number[][] | null, kl2Phase: number[][] | null
   }
 
   const len = Math.min(kl1Phase.length, kl2Phase.length, kl3Phase.length);
-  const ph1 = movingAverage(kl1Phase.slice(0, len).map(v => v[1]), 9);
-  const ph2 = movingAverage(kl2Phase.slice(0, len).map(v => v[1]), 9);
-  const ph3 = movingAverage(kl3Phase.slice(0, len).map(v => v[1]), 9);
+  const ph1 = movingAverage(kl1Phase.slice(0, len).map(v => v[1]), 17);
+  const ph2 = movingAverage(kl2Phase.slice(0, len).map(v => v[1]), 17);
+  const ph3 = movingAverage(kl3Phase.slice(0, len).map(v => v[1]), 17);
 
   return Array.from({ length: len }, (_, i) => ({
     t: kl1Phase[i][0],
@@ -152,11 +159,12 @@ function buildRfData(c1: number[][], c2: number[][], c3: number[][]) {
 
   const len = Math.min(c1.length, c2.length, c3.length);
   const sum = Array.from({ length: len }, (_, i) => c1[i][1] + c2[i][1] + c3[i][1]);
-  const smooth = movingAverage(sum, 21);
+  const smooth = movingAverage(sum, 31);
+  const max = Math.max(1e-9, ...smooth.map(v => Math.abs(v)));
 
   return Array.from({ length: len }, (_, i) => ({
     t: c1[i][0],
-    v: smooth[i],
+    v: Math.max(0, Math.min(1, smooth[i] / max)),
   }));
 }
 
