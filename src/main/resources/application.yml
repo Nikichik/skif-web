@@ -6,7 +6,7 @@ spring:
     name: skif-monitor
 
 epics:
-  simulation-mode: true
+  simulation-mode: false
   ca-addr-list: ""
   pv:
     linac:
