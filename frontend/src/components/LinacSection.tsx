@@ -42,16 +42,11 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
       <div className="grid grid-cols-1 xl:grid-cols-[320px_1fr] gap-3">
         <div className="flex flex-col gap-2">
           {statusItems.length > 0 && (
-            <>
-              <div className="grid grid-cols-3 gap-2">
-                {statusItems.map(item => (
-                  <StatusIndicator key={item.label} label={item.label} status={item.status!} />
-                ))}
-              </div>
-              <div className="text-xs text-gray-400">
-                Зеленый: норма. Красный: авария или отключено.
-              </div>
-            </>
+            <div className="grid grid-cols-3 gap-2">
+              {statusItems.map(item => (
+                <StatusIndicator key={item.label} label={item.label} status={item.status!} />
+              ))}
+            </div>
           )}
           <div className="flex flex-col gap-2 mt-1">
             <ValueCard label="Ток пушки" value={data.gunCurrent ?? null} unit="мА" />
@@ -64,7 +59,8 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
             <PulseChart
               title="Мощность клистронов"
               data={powerData}
-              yLabel="Сигнал EPICS, усл. ед."
+              yLabel="МВт"
+              yDomain={[0, 50]}
               series={[
                 { key: 'kl1', label: 'Клистрон 1', color: '#3B82F6' },
                 { key: 'kl2', label: 'Клистрон 2', color: '#22C55E' },
@@ -129,10 +125,10 @@ function buildPowerData(kl1: number[][] | null, kl2: number[][] | null, kl3: num
 
   return Array.from({ length: len }, (_, i) => ({
     t: kl1[i][0],
-    v: s1[i],
-    kl1: s1[i],
-    kl2: s2[i],
-    kl3: s3[i],
+    v: clampPowerMw(s1[i]),
+    kl1: clampPowerMw(s1[i]),
+    kl2: clampPowerMw(s2[i]),
+    kl3: clampPowerMw(s3[i]),
   }));
 }
 
@@ -185,4 +181,10 @@ function movingAverage(values: number[], windowSize: number) {
     }
     return sum / (end - start + 1);
   });
+}
+
+function clampPowerMw(value: number) {
+  if (value < 0) return 0;
+  if (value > 50) return 50;
+  return value;
 }
