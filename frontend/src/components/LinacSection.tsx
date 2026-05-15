@@ -35,26 +35,26 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
   ].filter(item => !!item.status);
 
   return (
-    <section className="px-4 py-2">
-      <h2 className="text-2xl font-bold text-white mb-2 border-b border-panel-border pb-2">
+    <section className="px-4 py-1">
+      <h2 className="text-xl font-bold text-white mb-1 border-b border-panel-border pb-1">
         Линейный ускоритель
       </h2>
-      <div className="grid grid-cols-1 xl:grid-cols-[320px_1fr] gap-3">
-        <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-2">
+        <div className="flex flex-col gap-1">
           {statusItems.length > 0 && (
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1">
               {statusItems.map(item => (
                 <StatusIndicator key={item.label} label={item.label} status={item.status!} />
               ))}
             </div>
           )}
-          <div className="flex flex-col gap-2 mt-1">
+          <div className="flex flex-col gap-1 mt-1">
             <ValueCard label="Ток пушки" value={data.gunCurrent ?? null} unit="мА" />
             <ValueCard label="Ток линака" value={data.linacCurrent ?? null} unit="мА" />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 2xl:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 2xl:grid-cols-3 gap-1">
           {powerData && (
             <PulseChart
               title="Мощность клистронов"
@@ -66,7 +66,7 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
                 { key: 'kl2', label: 'Клистрон 2', color: '#22C55E' },
                 { key: 'kl3', label: 'Клистрон 3', color: '#F59E0B' },
               ]}
-              height={210}
+              height={175}
             />
           )}
           {phaseData && (
@@ -80,14 +80,14 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
                 { key: 'ph2', label: 'Клистрон 2', color: '#A78BFA' },
                 { key: 'ph3', label: 'Клистрон 3', color: '#F97316' },
               ]}
-              height={210}
+              height={175}
             />
           )}
           {rfData && (
-            <div className="bg-panel-card border border-panel-border rounded-lg p-2">
+            <div className="bg-panel-card border border-panel-border rounded-lg p-1.5">
               <h4 className="text-sm text-gray-300 mb-2">ВЧ система</h4>
-              <div className="grid grid-cols-[130px_1fr] gap-2 items-start">
-                <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-[118px_1fr] gap-1 items-start">
+                <div className="grid grid-cols-2 gap-1">
                   {booster?.cav1LlrfModulatorStatus && <StatusIndicator label="Резонатор 1" status={booster.cav1LlrfModulatorStatus} />}
                   {booster?.cav2LlrfModulatorStatus && <StatusIndicator label="Резонатор 2" status={booster.cav2LlrfModulatorStatus} />}
                   {booster?.cav3LlrfModulatorStatus && <StatusIndicator label="Резонатор 3" status={booster.cav3LlrfModulatorStatus} />}
@@ -102,7 +102,7 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
                   xDomain={[0, 1]}
                   xLabel="время, с"
                   xUnit="с"
-                  height={175}
+                  height={145}
                 />
               </div>
             </div>

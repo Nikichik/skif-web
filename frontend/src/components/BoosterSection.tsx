@@ -32,7 +32,7 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
 
   return (
     <section className="px-4 py-1">
-      <h2 className="text-2xl font-bold text-white mb-2 border-b border-panel-border pb-2">
+      <h2 className="text-xl font-bold text-white mb-1 border-b border-panel-border pb-1">
         Бустерный синхротрон
       </h2>
       <div className="grid grid-cols-1 xl:grid-cols-[260px_1fr] gap-3 items-stretch">
@@ -46,7 +46,7 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
         {chartData.length > 0 && (
           <div className="bg-panel-card border border-panel-border rounded-lg p-3">
             <h4 className="text-base text-gray-200 mb-1">Энергия и ток за цикл бустера</h4>
-            <ResponsiveContainer width="100%" height={390}>
+            <ResponsiveContainer width="100%" height={340}>
               <LineChart data={chartData} margin={{ top: 8, right: 40, left: 18, bottom: 28 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1E3050" />
                 <XAxis

@@ -15,10 +15,10 @@ export default function StatusIndicator({ label, status, value }: StatusIndicato
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className={`w-12 h-12 rounded-full ${colorClass} shadow-lg ring-2 ring-white/10 flex items-center justify-center`}>
+      <div className={`w-10 h-10 rounded-full ${colorClass} shadow-lg ring-2 ring-white/10 flex items-center justify-center`}>
         {value && <span className="text-xs font-bold text-white">{value}</span>}
       </div>
-      <span className="text-xs text-gray-300 text-center leading-tight">{label}</span>
+      <span className="text-[10px] text-gray-300 text-center leading-tight">{label}</span>
     </div>
   );
 }
