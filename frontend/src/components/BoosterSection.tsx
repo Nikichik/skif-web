@@ -46,7 +46,7 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
         {chartData.length > 0 && (
           <div className="bg-panel-card border border-panel-border rounded-lg p-3">
             <h4 className="text-base text-gray-200 mb-1">Энергия и ток за цикл бустера</h4>
-            <ResponsiveContainer width="100%" height={340}>
+            <ResponsiveContainer width="100%" height={365}>
               <LineChart data={chartData} margin={{ top: 8, right: 40, left: 18, bottom: 28 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1E3050" />
                 <XAxis

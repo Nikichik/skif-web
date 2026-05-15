@@ -61,6 +61,7 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
               data={powerData}
               yLabel="МВт"
               yDomain={[0, 50]}
+              xDomain={[0, 2]}
               series={[
                 { key: 'kl1', label: 'Клистрон 1', color: '#3B82F6' },
                 { key: 'kl2', label: 'Клистрон 2', color: '#22C55E' },
@@ -75,6 +76,7 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
               data={phaseData}
               yLabel="Градусы"
               yDomain={[-180, 180]}
+              xDomain={[0, 2]}
               series={[
                 { key: 'ph1', label: 'Клистрон 1', color: '#06B6D4' },
                 { key: 'ph2', label: 'Клистрон 2', color: '#A78BFA' },
@@ -124,7 +126,7 @@ function buildPowerData(kl1: number[][] | null, kl2: number[][] | null, kl3: num
   const s3 = movingAverage(kl3.slice(0, len).map(v => v[1]), 15);
 
   return Array.from({ length: len }, (_, i) => ({
-    t: kl1[i][0],
+    t: len <= 1 ? 0 : (2.0 * i) / (len - 1),
     v: clampPowerMw(s1[i]),
     kl1: clampPowerMw(s1[i]),
     kl2: clampPowerMw(s2[i]),
@@ -143,7 +145,7 @@ function buildPhaseData(kl1Phase: number[][] | null, kl2Phase: number[][] | null
   const ph3 = movingAverage(kl3Phase.slice(0, len).map(v => v[1]), 17);
 
   return Array.from({ length: len }, (_, i) => ({
-    t: kl1Phase[i][0],
+    t: len <= 1 ? 0 : (2.0 * i) / (len - 1),
     v: ph1[i],
     ph1: ph1[i],
     ph2: ph2[i],
