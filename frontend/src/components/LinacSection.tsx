@@ -42,11 +42,16 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
       <div className="grid grid-cols-1 xl:grid-cols-[320px_1fr] gap-3">
         <div className="flex flex-col gap-2">
           {statusItems.length > 0 && (
-            <div className="grid grid-cols-3 gap-2">
-              {statusItems.map(item => (
-                <StatusIndicator key={item.label} label={item.label} status={item.status!} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-3 gap-2">
+                {statusItems.map(item => (
+                  <StatusIndicator key={item.label} label={item.label} status={item.status!} />
+                ))}
+              </div>
+              <div className="text-xs text-gray-400">
+                Зеленый: норма. Красный: авария или отключено.
+              </div>
+            </>
           )}
           <div className="flex flex-col gap-2 mt-1">
             <ValueCard label="Ток пушки" value={data.gunCurrent ?? null} unit="мА" />
@@ -59,8 +64,7 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
             <PulseChart
               title="Мощность клистронов"
               data={powerData}
-              yLabel="Относительная мощность, %"
-              yDomain={[0, 100]}
+              yLabel="Сигнал EPICS, усл. ед."
               series={[
                 { key: 'kl1', label: 'Клистрон 1', color: '#3B82F6' },
                 { key: 'kl2', label: 'Клистрон 2', color: '#22C55E' },
@@ -73,7 +77,7 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
             <PulseChart
               title="Фаза клистронов"
               data={phaseData}
-              yLabel="Фаза, градусы"
+              yLabel="Градусы"
               yDomain={[-180, 180]}
               series={[
                 { key: 'ph1', label: 'Клистрон 1', color: '#06B6D4' },
@@ -96,7 +100,7 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
                 <PulseChart
                   title=""
                   data={rfData}
-                  yLabel="Мощность, кВт"
+                  yLabel="кВт"
                   yDomain={[0, 1]}
                   color="#22C55E"
                   xDomain={[0, 1]}
@@ -119,17 +123,16 @@ function buildPowerData(kl1: number[][] | null, kl2: number[][] | null, kl3: num
   }
 
   const len = Math.min(kl1.length, kl2.length, kl3.length);
-  const s1 = movingAverage(kl1.slice(0, len).map(v => Math.abs(v[1])), 15);
-  const s2 = movingAverage(kl2.slice(0, len).map(v => Math.abs(v[1])), 15);
-  const s3 = movingAverage(kl3.slice(0, len).map(v => Math.abs(v[1])), 15);
-  const peak = Math.max(1e-9, ...s1, ...s2, ...s3);
+  const s1 = movingAverage(kl1.slice(0, len).map(v => v[1]), 15);
+  const s2 = movingAverage(kl2.slice(0, len).map(v => v[1]), 15);
+  const s3 = movingAverage(kl3.slice(0, len).map(v => v[1]), 15);
 
   return Array.from({ length: len }, (_, i) => ({
     t: kl1[i][0],
-    v: (s1[i] / peak) * 100,
-    kl1: (s1[i] / peak) * 100,
-    kl2: (s2[i] / peak) * 100,
-    kl3: (s3[i] / peak) * 100,
+    v: s1[i],
+    kl1: s1[i],
+    kl2: s2[i],
+    kl3: s3[i],
   }));
 }
 

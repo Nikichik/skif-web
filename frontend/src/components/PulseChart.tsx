@@ -38,7 +38,7 @@ export default function PulseChart({
     <div className="bg-panel-card border border-panel-border rounded-lg p-3">
       <h4 className="text-sm text-gray-300 mb-2">{title}</h4>
       <ResponsiveContainer width="100%" height={height}>
-        <LineChart data={chartData} margin={{ top: 5, right: 12, left: 8, bottom: 20 }}>
+        <LineChart data={chartData} margin={{ top: 5, right: 12, left: 28, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1E3050" />
           <XAxis
             dataKey="t"
@@ -50,7 +50,7 @@ export default function PulseChart({
           <YAxis
             tick={{ fontSize: 11, fill: '#94A3B8' }}
             domain={computedYDomain}
-            label={{ value: yLabel, angle: -90, position: 'insideLeft', offset: 2, style: { fontSize: 11, fill: '#94A3B8' } }}
+            label={{ value: yLabel, angle: -90, position: 'left', dx: -18, style: { fontSize: 11, fill: '#94A3B8' } }}
           />
           <Tooltip
             contentStyle={{ backgroundColor: '#111D33', border: '1px solid #1E3050', fontSize: 12 }}
