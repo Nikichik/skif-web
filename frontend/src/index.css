@@ -2,11 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --panel-bg: 10 22 40;
+  --panel-card: 17 29 51;
+  --panel-border: 30 48 80;
+  --text-primary: 248 250 252;
+  --text-secondary: 148 163 184;
+  --chart-grid: 30 48 80;
+  --chart-text: 148 163 184;
+  --tooltip-bg: 17 29 51;
+  --tooltip-border: 30 48 80;
+}
+
+:root[data-theme='light'] {
+  --panel-bg: 242 246 252;
+  --panel-card: 255 255 255;
+  --panel-border: 200 212 230;
+  --text-primary: 15 23 42;
+  --text-secondary: 71 85 105;
+  --chart-grid: 203 213 225;
+  --chart-text: 71 85 105;
+  --tooltip-bg: 255 255 255;
+  --tooltip-border: 200 212 230;
+}
+
 body {
   margin: 0;
   padding: 0;
-  background-color: #0A1628;
-  color: #E2E8F0;
+  background-color: rgb(var(--panel-bg));
+  color: rgb(var(--text-primary));
   font-family: 'JetBrains Mono', monospace;
   overflow-x: hidden;
 }
@@ -15,9 +39,9 @@ body {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A1628;
+  background: rgb(var(--panel-bg));
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E3050;
+  background: rgb(var(--panel-border));
   border-radius: 4px;
 }

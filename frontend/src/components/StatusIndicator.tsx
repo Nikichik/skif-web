@@ -18,7 +18,7 @@ export default function StatusIndicator({ label, status, value }: StatusIndicato
       <div className={`w-10 h-10 rounded-full ${colorClass} shadow-lg ring-2 ring-white/10 flex items-center justify-center`}>
         {value && <span className="text-xs font-bold text-white">{value}</span>}
       </div>
-      <span className="text-[10px] text-gray-300 text-center leading-tight">{label}</span>
+      <span className="text-[10px] text-center leading-tight" style={{ color: 'rgb(var(--text-secondary))' }}>{label}</span>
     </div>
   );
 }

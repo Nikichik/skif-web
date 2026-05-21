@@ -5,9 +5,9 @@ export default {
     extend: {
       colors: {
         panel: {
-          bg: '#0A1628',
-          card: '#111D33',
-          border: '#1E3050',
+          bg: 'rgb(var(--panel-bg) / <alpha-value>)',
+          card: 'rgb(var(--panel-card) / <alpha-value>)',
+          border: 'rgb(var(--panel-border) / <alpha-value>)',
         },
         status: {
           ok: '#22C55E',

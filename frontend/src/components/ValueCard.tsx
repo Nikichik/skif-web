@@ -11,10 +11,10 @@ export default function ValueCard({ label, value, unit }: ValueCardProps) {
 
   return (
     <div className="bg-panel-card border border-panel-border rounded-lg px-4 py-3">
-      <div className="text-xs text-gray-400 uppercase tracking-wider">{label}</div>
-      <div className="text-2xl font-bold text-white font-mono leading-tight">
+      <div className="text-xs uppercase tracking-wider" style={{ color: 'rgb(var(--text-secondary))' }}>{label}</div>
+      <div className="text-2xl font-bold font-mono leading-tight" style={{ color: 'rgb(var(--text-primary))' }}>
         {value.toFixed(1)}
-        <span className="text-sm text-gray-300 ml-2">{unit}</span>
+        <span className="text-sm ml-2" style={{ color: 'rgb(var(--text-secondary))' }}>{unit}</span>
       </div>
     </div>
   );

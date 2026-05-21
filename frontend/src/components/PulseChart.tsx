@@ -36,24 +36,24 @@ export default function PulseChart({
 
   return (
     <div className="bg-panel-card border border-panel-border rounded-lg p-3">
-      <h4 className="text-sm text-gray-300 mb-2">{title}</h4>
+      <h4 className="text-sm mb-2" style={{ color: 'rgb(var(--text-secondary))' }}>{title}</h4>
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={chartData} margin={{ top: 5, right: 12, left: 28, bottom: 20 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1E3050" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--chart-grid))" />
           <XAxis
             dataKey="t"
             type="number"
             domain={xDomain || ['dataMin', 'dataMax']}
-            tick={{ fontSize: 11, fill: '#94A3B8' }}
-            label={{ value: xLabel, position: 'insideBottom', offset: -10, style: { fontSize: 11, fill: '#94A3B8' } }}
+            tick={{ fontSize: 11, fill: 'rgb(var(--chart-text))' }}
+            label={{ value: xLabel, position: 'insideBottom', offset: -10, style: { fontSize: 11, fill: 'rgb(var(--chart-text))' } }}
           />
           <YAxis
-            tick={{ fontSize: 11, fill: '#94A3B8' }}
+            tick={{ fontSize: 11, fill: 'rgb(var(--chart-text))' }}
             domain={computedYDomain}
-            label={{ value: yLabel, angle: -90, position: 'left', dx: -18, style: { fontSize: 11, fill: '#94A3B8' } }}
+            label={{ value: yLabel, angle: -90, position: 'left', dx: -18, style: { fontSize: 11, fill: 'rgb(var(--chart-text))' } }}
           />
           <Tooltip
-            contentStyle={{ backgroundColor: '#111D33', border: '1px solid #1E3050', fontSize: 12 }}
+            contentStyle={{ backgroundColor: 'rgb(var(--tooltip-bg))', border: '1px solid rgb(var(--tooltip-border))', fontSize: 12 }}
             labelFormatter={(v) => `${v} ${xUnit}`}
           />
           {series && series.length > 0 ? (

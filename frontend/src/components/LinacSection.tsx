@@ -36,7 +36,7 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
 
   return (
     <section className="px-4 py-1">
-      <h2 className="text-xl font-bold text-white mb-1 border-b border-panel-border pb-1">
+      <h2 className="text-xl font-bold mb-1 border-b border-panel-border pb-1" style={{ color: 'rgb(var(--text-primary))' }}>
         Линейный ускоритель
       </h2>
       <div className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-2">
@@ -87,7 +87,7 @@ export default function LinacSection({ data, booster }: LinacSectionProps) {
           )}
           {rfData && (
             <div className="bg-panel-card border border-panel-border rounded-lg p-1.5">
-              <h4 className="text-sm text-gray-300 mb-2">ВЧ система</h4>
+              <h4 className="text-sm mb-2" style={{ color: 'rgb(var(--text-secondary))' }}>ВЧ система</h4>
               <div className="grid grid-cols-[118px_1fr] gap-1 items-start">
                 <div className="grid grid-cols-2 gap-1">
                   {booster?.cav1LlrfModulatorStatus && <StatusIndicator label="Резонатор 1" status={booster.cav1LlrfModulatorStatus} />}

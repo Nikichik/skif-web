@@ -32,7 +32,7 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
 
   return (
     <section className="px-4 py-1">
-      <h2 className="text-xl font-bold text-white mb-1 border-b border-panel-border pb-1">
+      <h2 className="text-xl font-bold mb-1 border-b border-panel-border pb-1" style={{ color: 'rgb(var(--text-primary))' }}>
         Бустерный синхротрон
       </h2>
       <div className="grid grid-cols-1 xl:grid-cols-[260px_1fr] gap-3 items-stretch">
@@ -45,33 +45,33 @@ export default function BoosterSection({ data }: BoosterSectionProps) {
 
         {chartData.length > 0 && (
           <div className="bg-panel-card border border-panel-border rounded-lg p-3">
-            <h4 className="text-base text-gray-200 mb-1">Энергия и ток за цикл бустера</h4>
+            <h4 className="text-base mb-1" style={{ color: 'rgb(var(--text-primary))' }}>Энергия и ток за цикл бустера</h4>
             <ResponsiveContainer width="100%" height={365}>
               <LineChart data={chartData} margin={{ top: 8, right: 40, left: 18, bottom: 28 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1E3050" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--chart-grid))" />
                 <XAxis
                   dataKey="t"
                   type="number"
                   domain={[0, 1000]}
-                  tick={{ fontSize: 11, fill: '#94A3B8' }}
-                  label={{ value: 'время, мс', position: 'insideBottom', offset: -8, style: { fontSize: 11, fill: '#94A3B8' } }}
+                  tick={{ fontSize: 11, fill: 'rgb(var(--chart-text))' }}
+                  label={{ value: 'время, мс', position: 'insideBottom', offset: -8, style: { fontSize: 11, fill: 'rgb(var(--chart-text))' } }}
                 />
                 <YAxis
                   yAxisId="energy"
                   orientation="left"
                   domain={[0, 3000]}
-                  tick={{ fontSize: 11, fill: '#94A3B8' }}
-                  label={{ value: 'Энергия, МэВ', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#94A3B8' } }}
+                  tick={{ fontSize: 11, fill: 'rgb(var(--chart-text))' }}
+                  label={{ value: 'Энергия, МэВ', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: 'rgb(var(--chart-text))' } }}
                 />
                 <YAxis
                   yAxisId="current"
                   orientation="right"
                   domain={[0, 5]}
-                  tick={{ fontSize: 11, fill: '#94A3B8' }}
-                  label={{ value: 'Ток, мА', angle: 90, position: 'insideRight', style: { fontSize: 11, fill: '#94A3B8' } }}
+                  tick={{ fontSize: 11, fill: 'rgb(var(--chart-text))' }}
+                  label={{ value: 'Ток, мА', angle: 90, position: 'insideRight', style: { fontSize: 11, fill: 'rgb(var(--chart-text))' } }}
                 />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#111D33', border: '1px solid #1E3050', fontSize: 11 }}
+                  contentStyle={{ backgroundColor: 'rgb(var(--tooltip-bg))', border: '1px solid rgb(var(--tooltip-border))', fontSize: 11 }}
                   labelFormatter={(v) => `${v} мс`}
                 />
                 <Legend wrapperStyle={{ fontSize: 11, bottom: -6 }} />
